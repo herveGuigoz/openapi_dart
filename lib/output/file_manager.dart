@@ -6,6 +6,7 @@ abstract class FileManager {
   final sb = StringBuffer();
 
   Future<void> save(String filename) async {
+    await _createDirectoryIfNotExist();
     final file = File('$kOutputsDirectory$filename');
 
     var sink = file.openWrite();
@@ -22,5 +23,10 @@ abstract class FileManager {
 
   void indent(String string, [int x = 1]) {
     sb.writeln('${kIndent * x}$string');
+  }
+
+  Future<void> _createDirectoryIfNotExist() async {
+    final dir = Directory(kOutputsDirectory);
+    await dir.create(recursive: true);
   }
 }
