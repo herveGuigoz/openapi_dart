@@ -29,7 +29,9 @@ class Definition {
 
   List<String> get refs {
     if (properties == null) return null;
+
     final refs = <String>[];
+
     for (final property in properties) {
       if (property?.ref == null) continue;
       refs.add(property.ref);

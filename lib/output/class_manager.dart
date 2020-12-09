@@ -10,7 +10,9 @@ class ClassManager extends FileManager {
 
   String get className => definition.name.split('-')[0];
 
-  Future<void> generate() async {
+  Future<String> generate() async {
+    write("part of 'models.dart';\n");
+
     write('class $className {');
 
     indent('const $className({');
@@ -28,6 +30,9 @@ class ClassManager extends FileManager {
 
     write('}');
 
-    await save('${className.toFileName()}.dart');
+    final fileName = '${className.toFileName()}.dart';
+    await save(fileName);
+
+    return fileName;
   }
 }

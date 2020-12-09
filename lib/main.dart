@@ -1,40 +1,41 @@
 import 'package:args/args.dart';
+import 'package:swagger_models_generator/output/file_manager.dart';
 
-import 'swagger.dart';
+import 'models/models.dart';
+import 'network/repository.dart';
+import 'output/class_manager.dart';
 
-class Main {
-  static ArgParser get _argsParser => ArgParser()
-    ..addOption(
-      'url',
-      abbr: 'u',
-      help: 'Required: Swagger documentation url.',
-    )
-    ..addOption(
-      'iri',
-      abbr: 'i',
-      help: 'Required: IRI to parse.',
-    )
-    ..addFlag(
-      'help',
-      abbr: 'h',
-      negatable: false,
-      help: 'Displays help information.',
-    );
+Future<void> main(String url, String iri) async {
+  final files = <String>[];
 
-  static Future<void> parse(List<String> args) async {
-    final argResults = _argsParser.parse(args);
+  final response = await Repository.loadJson(url);
+  final doc = Document.fromRawJson(response);
 
-    final url = argResults['url'] as String;
-    final iri = argResults['iri'] as String;
+  final methodGET = doc.getPathByName(iri).methodGET;
 
-    if (argResults['help'] || url == null || iri == null) return _help();
+  final definition = doc.getDefinitionByName(methodGET.ref);
 
-    return _generate(url, iri);
+  await ClassManager(definition).generate().then((value) => files.add(value));
+
+  final refs = definition.refs;
+  for (final ref in refs) {
+    await ClassManager(doc.getDefinitionByName(ref))
+        .generate()
+        .then((value) => files.add(value));
+    ;
   }
 
-  static void _help() => print('usage:\n${_argsParser.usage}');
+  await ModelsFileManager().writeModelsFile(files);
 
-  static Future<void> _generate(String url, String iri) {
-    return Swagger(url, iri).generateModels();
+  return;
+}
+
+class ModelsFileManager extends FileManager {
+  Future<void> writeModelsFile(List<String> files) async {
+    for (final file in files) {
+      write("part '$file';");
+    }
+
+    await save('models.dart');
   }
 }
