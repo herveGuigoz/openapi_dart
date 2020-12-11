@@ -1,13 +1,19 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../utils.dart';
 
-class Path {
-  Path({this.iri, this.ressources});
+part 'path.freezed.dart';
 
-  final String iri;
-  final List<Ressource> ressources;
+@freezed
+abstract class Path implements _$Path {
+  const Path._();
+
+  const factory Path({
+    @required String iri,
+    @required List<Ressource> ressources,
+  }) = _Path;
 
   Ressource getRessourceByMethod(String method) {
     final _method = method.toLowerCase();
@@ -18,8 +24,8 @@ class Path {
 
     return ressources.firstWhere(
       (ressource) => ressource.name == _method,
-      orElse: () => throw Exception(
-        '$_method method not found in specifications',
+      orElse: () => throw ArgumentError(
+        '${_method.toUpperCase()} method not found in specifications. ${ressources.map((e) => e.name.toUpperCase()).toList()}',
       ),
     );
   }
@@ -35,38 +41,20 @@ class Path {
       ressources: ressources,
     );
   }
-
-  @override
-  String toString() => 'Path(iri: $iri, ressources: $ressources)';
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    final listEquals = const DeepCollectionEquality().equals;
-
-    return other is Path &&
-        other.iri == iri &&
-        listEquals(other.ressources, ressources);
-  }
-
-  @override
-  int get hashCode => iri.hashCode ^ ressources.hashCode;
 }
 
-class Ressource {
-  Ressource({
-    @required this.name,
-    @required this.tag,
-    @required this.operationId,
-    this.summary,
-    this.responses,
-  });
+@freezed
+abstract class Ressource implements _$Ressource {
+  const Ressource._();
 
-  final String name;
-  final String tag;
-  final String summary;
-  final String operationId;
-  final List<Response> responses;
+  const factory Ressource({
+    @required String name,
+    @required String tag,
+    @required String operationId,
+    String summary,
+    List<Response> responses,
+    // this.requests,
+  }) = _Ressource;
 
   factory Ressource.fromKeyValue(String key, Map<String, Object> value) {
     final summary = value['summary'] as String;
@@ -86,42 +74,20 @@ class Ressource {
       operationId: operationId,
       summary: summary,
       responses: responses,
+      // requests: requests,
     );
-  }
-
-  @override
-  String toString() {
-    return 'Ressource(name: $name, tag: $tag, summary: $summary, responses: $responses)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    final listEquals = const DeepCollectionEquality().equals;
-
-    return other is Ressource &&
-        other.name == name &&
-        other.tag == tag &&
-        other.summary == summary &&
-        listEquals(other.responses, responses);
-  }
-
-  @override
-  int get hashCode {
-    return name.hashCode ^ tag.hashCode ^ summary.hashCode ^ responses.hashCode;
   }
 }
 
-class Response {
-  Response({
-    @required this.code,
-    this.description,
-    this.ref,
-  });
+@freezed
+abstract class Response implements _$Response {
+  const Response._();
 
-  final int code;
-  final String description;
-  final String ref;
+  const factory Response({
+    @required int code,
+    String description,
+    String ref,
+  }) = _Response;
 
   factory Response.fromKeyValue(String key, Map<String, Object> value) {
     final description =
@@ -144,21 +110,31 @@ class Response {
       ref: ref?.allAfter('#/definitions/'),
     );
   }
+}
 
-  @override
-  String toString() =>
-      'Response(code: $code, description: $description, ref: $ref)';
+@freezed
+abstract class Parameter implements _$Parameter {
+  const Parameter._();
 
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
+  const factory Parameter({
+    @required String name,
+    @required String ref,
+    // 'in' value in OpenDate spec
+    String origin,
+    String description,
+  }) = _Parameter;
 
-    return other is Response &&
-        other.code == code &&
-        other.description == description &&
-        other.ref == ref;
+  factory Parameter.fromJson(Map<String, Object> value) {
+    final name = value['name'] as String;
+    final description = value['description'] as String;
+    final origin = value['in'] as String;
+    final ref = (value['schema'] as Map<String, Object>)[r'$ref'] as String;
+
+    return Parameter(
+      name: name,
+      description: description,
+      origin: origin,
+      ref: ref,
+    );
   }
-
-  @override
-  int get hashCode => code.hashCode ^ description.hashCode ^ ref.hashCode;
 }

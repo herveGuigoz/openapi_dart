@@ -1,7 +1,7 @@
+import 'package:openapi_dart/models/reference.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../models/definition.dart';
-import '../models/path.dart';
 import '../providers.dart';
 import '../utils.dart';
 import 'file_manager.dart';
@@ -29,7 +29,7 @@ class DefinitionPrinter extends FileManager {
     return '$name.dart';
   }
 
-  Response get _responseModel => read(getResponseForPathAndMethod);
+  Reference get _responseModel => read(getResponseForPathAndMethod).dataOrThrow;
 
   Future<void> generate() async {
     _writeImports();

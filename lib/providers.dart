@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:openapi_dart/models/result.dart';
 import 'package:riverpod/all.dart';
 
 import 'models/definition.dart';
 import 'models/path.dart';
+import 'models/reference.dart';
 import 'network/repository.dart';
 import 'output/definition_printer.dart';
 
@@ -66,22 +68,34 @@ final pathsProvider = Provider<List<Path>>((ref) {
 });
 
 /// Find given Path in openApi documentation.
-final pathModelProvider = Provider<Path>((ref) {
+final pathModelProvider = Provider<Result<Path>>((ref) {
   final param = ref.read(pathProvider);
-  return ref.read(pathsProvider).firstWhere(
+  final path = ref.read(pathsProvider).firstWhere(
         (path) => path.iri == param,
-        orElse: () => throw ArgumentError(
-          'error: undefine $param in specifications',
-        ),
+        orElse: () => null,
       );
+
+  return path != null
+      ? Result.data(path)
+      : Result.error(ArgumentError('undefine $param in specifications'));
 });
 
-final getResponseForPathAndMethod = Provider<Response>((ref) {
-  final path = ref.read(pathModelProvider);
-  final method = ref.read(methodProvider).toLowerCase();
-  final response = path.getRessourceByMethod(method)?.responses?.first;
+/// Get reference for response definition
+final getResponseForPathAndMethod = Provider<Result<Reference>>((ref) {
+  Reference reference;
+  try {
+    final path = ref.read(pathModelProvider).dataOrThrow;
+    final method = ref.read(methodProvider).toLowerCase();
+    final ressource = path.getRessourceByMethod(method);
+    reference = Reference(
+      value: ressource.responses.first.ref,
+      description: ressource.responses.first.description,
+    );
+  } catch (err) {
+    return Result.error(err.toString());
+  }
 
-  return response;
+  return Result.data(reference);
 });
 
 /// Translate openApi Property type to dart as String.

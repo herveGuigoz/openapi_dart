@@ -1,23 +1,24 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../utils.dart';
 
+part 'definition.freezed.dart';
+
 // Util to output List<...> as Dart Type.
-class Array {}
+abstract class Array {}
 
-class Definition {
-  Definition({
-    @required this.name,
-    this.description,
-    this.properties,
-    this.requiredProperties,
-  });
+@freezed
+abstract class Definition implements _$Definition {
+  const Definition._();
 
-  final String name;
-  final String description;
-  final List<Property> properties;
-  final List<String> requiredProperties;
+  factory Definition({
+    @required String name,
+    String description,
+    List<Property> properties,
+    List<String> requiredProperties,
+  }) = _Definition;
 
   factory Definition.fromKeyValue(String key, Map<String, Object> value) {
     final description =
@@ -46,47 +47,19 @@ class Definition {
     final matchs = RegExp(r'[A-z|0-9]*').firstMatch(name);
     return matchs.group(0);
   }
-
-  @override
-  String toString() {
-    return 'Definition(name: $name, description: $description, properties: $properties, requiredProperties: $requiredProperties)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    final listEquals = const DeepCollectionEquality().equals;
-
-    return other is Definition &&
-        other.name == name &&
-        other.description == description &&
-        listEquals(other.properties, properties) &&
-        listEquals(other.requiredProperties, requiredProperties);
-  }
-
-  @override
-  int get hashCode {
-    return name.hashCode ^
-        description.hashCode ^
-        properties.hashCode ^
-        requiredProperties.hashCode;
-  }
 }
 
-class Property {
-  Property({
-    @required this.name,
-    @required this.type,
-    this.subType,
-    this.ref,
-    this.description,
-  });
+@freezed
+abstract class Property implements _$Property {
+  const Property._();
 
-  final String name;
-  final Type type;
-  final Type subType;
-  final String ref;
-  final String description;
+  const factory Property({
+    @required String name,
+    @required Type type,
+    Type subType,
+    String ref,
+    String description,
+  }) = _Property;
 
   bool get hasDefinition => type == Definition || subType == Definition;
   bool get isArray => type == Array;
@@ -132,31 +105,5 @@ class Property {
     if (type == 'array') return Array;
 
     return Object;
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is Property &&
-        other.name == name &&
-        other.type == type &&
-        other.subType == subType &&
-        other.ref == ref &&
-        other.description == description;
-  }
-
-  @override
-  int get hashCode {
-    return name.hashCode ^
-        type.hashCode ^
-        subType.hashCode ^
-        ref.hashCode ^
-        description.hashCode;
-  }
-
-  @override
-  String toString() {
-    return 'Property(name: $name, type: $type, subType: $subType, ref: $ref, description: $description)';
   }
 }
