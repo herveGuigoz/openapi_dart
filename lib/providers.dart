@@ -8,7 +8,7 @@ import 'models/definition.dart';
 import 'models/path.dart';
 import 'models/reference.dart';
 import 'network/repository.dart';
-import 'output/definition_printer.dart';
+import 'output/response_printer.dart';
 
 /// OpenApi documentation url.
 final urlProvider = Provider<String>(null);
@@ -119,7 +119,7 @@ final stringBufferProvider = Provider(
 
 /// Generate file for given Definition.
 final writeToFile = FutureProvider.autoDispose.family<void, Definition>(
-  (ref, def) async => DefinitionPrinter(
+  (ref, def) async => ResponsePrinter(
     ref.read,
     def,
     isRequestDefinition: true,

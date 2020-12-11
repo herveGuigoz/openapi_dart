@@ -6,8 +6,8 @@ import '../providers.dart';
 import '../utils.dart';
 import 'file_manager.dart';
 
-class DefinitionPrinter extends FileManager {
-  DefinitionPrinter(
+class ResponsePrinter extends FileManager {
+  ResponsePrinter(
     Reader read,
     this.definition, {
     this.isRequestDefinition = false,
@@ -88,6 +88,6 @@ class DefinitionPrinter extends FileManager {
   Future<void> _generateChildIfHasReferenceOnDocument(Property property) async {
     if (!property.hasDefinition) return;
     final newDefToWrite = read(definitionProvider(property.ref));
-    await DefinitionPrinter(read, newDefToWrite).generate();
+    await ResponsePrinter(read, newDefToWrite).generate();
   }
 }
