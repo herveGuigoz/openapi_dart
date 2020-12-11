@@ -9,10 +9,20 @@ class Path {
   final String iri;
   final List<Ressource> ressources;
 
-  Ressource get getRessource => ressources.firstWhere(
-        (ressource) => ressource.name == 'get',
-        orElse: () => null,
-      );
+  Ressource getRessourceByMethod(String method) {
+    final _method = method.toLowerCase();
+
+    if (!['get', 'post', 'put', 'delete'].contains(_method)) {
+      throw Exception('Method $_method not available');
+    }
+
+    return ressources.firstWhere(
+      (ressource) => ressource.name == _method,
+      orElse: () => throw Exception(
+        '$_method method not found in specifications',
+      ),
+    );
+  }
 
   factory Path.fromKeyValue(String key, Map<String, Object> value) {
     final ressources = <Ressource>[];

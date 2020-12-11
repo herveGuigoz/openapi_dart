@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:riverpod/all.dart';
 
+import 'models/path.dart';
 import 'output/file_manager.dart';
 import 'providers.dart';
 
@@ -25,12 +26,8 @@ Future<void> main(String url, String path) async {
     exit(2);
   }
 
-  /// get definition reference for GET method.
-  final ref = pathModel?.getRessource?.responses?.first?.ref;
-  if (ref == null) {
-    stderr.writeln('error: no GET method found in specifications');
-    exit(2);
-  }
+  /// get definition reference for method (GET, PUT, POST, DELETE).
+  final ref = _getDefinitionForGivenPathAndMethod(pathModel);
 
   /// get Definition model.
   final def = container.read(definitionProvider(ref));
@@ -44,4 +41,20 @@ Future<void> main(String url, String path) async {
   await FileManager(container.read, stringBuffer: stringBuffer).save(fileName);
 
   return;
+}
+
+String _getDefinitionForGivenPathAndMethod(Path path) {
+  String ref;
+  try {
+    ref = path.getRessourceByMethod('get')?.responses?.first?.ref;
+  } catch (err) {
+    stderr.writeln('error: $err');
+    exit(2);
+  }
+  if (ref == null) {
+    stderr.writeln('error: No definition found in specification');
+    exit(2);
+  }
+
+  return ref;
 }
