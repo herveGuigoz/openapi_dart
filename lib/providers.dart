@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:riverpod/all.dart';
-import 'package:swagger_models_generator/models/definition.dart';
 
+import 'models/definition.dart';
 import 'models/path.dart';
 import 'network/repository.dart';
 import 'output/definition_printer.dart';
@@ -13,8 +13,7 @@ final urlProvider = Provider<String>(null);
 final directoryProvider = Provider((_) => 'build');
 
 final mainFileNameProvider = Provider<String>((ref) {
-  final directory = ref.read(directoryProvider);
-  return '$directory/output.dart';
+  return 'output.dart';
 });
 
 final specsProvider = FutureProvider<String>((ref) async {
@@ -71,13 +70,7 @@ final propertyTypeToString = Provider.family<String, Property>((ref, param) {
   return 'List<${def.entity}>';
 });
 
-// final stringBufferProvider = Provider.autoDispose((ref) {
-//   final buffer = StringBuffer();
-
-//   return buffer;
-// });
-
-// final fileProvider = Provider((_) => File('${kOutputsDirectory}output.dart'));
+final stringBufferProvider = Provider((_) => StringBuffer());
 
 final writeToFile = FutureProvider.autoDispose.family<void, Definition>(
   (ref, def) async => DefinitionPrinter(ref.read, def).generate(),

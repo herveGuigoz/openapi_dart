@@ -5,14 +5,14 @@ import 'main.dart';
 class Args {
   static ArgParser get _argsParser => ArgParser()
     ..addOption(
-      'url',
-      abbr: 'u',
-      help: 'Required: Swagger documentation url.',
+      'remote',
+      abbr: 'r',
+      help: 'Swagger documentation url.',
     )
     ..addOption(
-      'iri',
-      abbr: 'i',
-      help: 'Required: IRI to parse.',
+      'path',
+      abbr: 'p',
+      help: 'Open Api Path to parse.',
     )
     ..addFlag(
       'help',
@@ -24,12 +24,12 @@ class Args {
   static Future<void> parse(List<String> args) async {
     final argResults = _argsParser.parse(args);
 
-    final url = argResults['url'] as String;
-    final iri = argResults['iri'] as String;
+    final remote = argResults['remote'] as String;
+    final path = argResults['path'] as String;
 
-    if (argResults['help'] || url == null || iri == null) return _help();
+    if (argResults['help'] || remote == null || path == null) return _help();
 
-    return main(url, iri);
+    return main(remote, path);
   }
 
   static void _help() => print('usage:\n${_argsParser.usage}');

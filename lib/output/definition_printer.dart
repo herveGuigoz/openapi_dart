@@ -3,6 +3,7 @@ import 'package:riverpod/riverpod.dart';
 import '../models/definition.dart';
 import 'file_manager.dart';
 import '../providers.dart';
+import '../utils.dart';
 
 class DefinitionPrinter extends FileManager {
   DefinitionPrinter(
@@ -13,7 +14,7 @@ class DefinitionPrinter extends FileManager {
   final Definition definition;
 
   Future<void> generate() async {
-    // _writeImport();
+    _writeImports();
     _writeClassName();
     await _writeProperties();
     write('}');
@@ -21,21 +22,28 @@ class DefinitionPrinter extends FileManager {
     await save('${definition.entity}.dart');
   }
 
-  // void _writeImport() {
-  //   final mainFileName = read(mainFileNameProvider);
-  //   write("part of '$mainFileName';\n");
-  // }
+  void _writeImports() {
+    final mainFileName = read(mainFileNameProvider);
+    final stringBuffer = read(stringBufferProvider);
+    final output = "part '${definition.entity.toFileName()}.dart';";
+
+    if (!RegExp(output).hasMatch(stringBuffer.toString())) {
+      stringBuffer.writeln(output);
+    }
+
+    write("part of '$mainFileName';\n");
+  }
 
   void _writeClassName() {
     if (definition?.description != null) {
       write('/// ${definition.description}');
     }
     write('class ${definition.entity} {');
-    indent('${definition.entity}(');
+    indent('${definition.entity}({');
     for (final property in definition.properties) {
       indent('this.${property.name},', 2);
     }
-    indent(');\n');
+    indent('});\n');
   }
 
   Future<void> _writeProperties() async {
