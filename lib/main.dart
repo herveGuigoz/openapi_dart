@@ -15,23 +15,23 @@ Future<void> main(String url, String path, String method) async {
   );
 
   /// load open api documentation.
-  await container.read(specsProvider.future).catchError((_) {
+  await container.read(specsProvider.future).catchError((dynamic _) {
     stderr.writeln('error: $url is invalid');
     exit(2);
   });
 
   /// get Path model.
-  container.read(pathModelProvider).onError((err) {
+  container.read(pathModelProvider).onError((dynamic err) {
     stderr.writeln('$err');
     exit(2);
   });
 
   /// get definition reference for method (GET, POST, PUT).
-  final result = container.read(getResponseForPathAndMethod);
-  result.onError((err) {
-    stderr.writeln('$err');
-    exit(2);
-  });
+  final result = container.read(getResponseForPathAndMethod)
+    ..onError((dynamic err) {
+      stderr.writeln('$err');
+      exit(2);
+    });
 
   /// get Definition model.
   final def = container.read(definitionProvider(result.dataOrThrow.value));
@@ -41,7 +41,7 @@ Future<void> main(String url, String path, String method) async {
   }
 
   /// write file(s).
-  await container.read(writeToFile(def).future).catchError((err) {
+  await container.read(writeToFile(def).future).catchError((dynamic err) {
     stderr.writeln('$err');
     exit(2);
   });

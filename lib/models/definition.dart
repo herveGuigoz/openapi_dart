@@ -25,13 +25,17 @@ abstract class Definition implements _$Definition {
         value['description'] != null ? value['description'] as String : null;
 
     final requiredProperties = value['required'] != null
-        ? (value['required'] as Iterable).map((e) => e as String).toList()
+        ? (value['required'] as Iterable)
+            .map((dynamic e) => e as String)
+            .toList()
         : <String>[];
 
     var properties = <Property>[];
     if (value['properties'] != null) {
       (value['properties'] as Map<String, Object>).forEach((key, value) {
-        properties.add(Property.fromKeyValue(key, value));
+        properties.add(
+          Property.fromKeyValue(key, value as Map<String, Object>),
+        );
       });
     }
 
@@ -60,9 +64,6 @@ abstract class Property implements _$Property {
     String ref,
     String description,
   }) = _Property;
-
-  bool get hasDefinition => type == Definition || subType == Definition;
-  bool get isArray => type == Array;
 
   factory Property.fromKeyValue(String key, Map<String, Object> value) {
     final description =
@@ -93,6 +94,9 @@ abstract class Property implements _$Property {
       description: description,
     );
   }
+
+  bool get hasDefinition => type == Definition || subType == Definition;
+  bool get isArray => type == Array;
 
   static Type _getType(Map<String, Object> value) {
     final type = value['type'] as String;

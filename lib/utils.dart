@@ -36,7 +36,8 @@ extension StringExt on String {
       split(' ').map((e) => e.capitalize).join();
 }
 
-// Returns the joined elements of the list if the list is not null; otherwise null.
+// Returns the joined elements of the list
+// if the list is not null; otherwise null.
 String join(List list, [String separator = '']) {
   if (list == null) {
     return null;

@@ -76,7 +76,7 @@ class DefinitionPrinter extends FileManager {
         indent('// ${property.description}');
       }
 
-      indent('final ${type} ${property.name};');
+      indent('final $type ${property.name};');
     }
   }
 

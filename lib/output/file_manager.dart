@@ -14,13 +14,12 @@ class FileManager {
   final StringBuffer _stringBuffer;
   Reader read;
 
-  File getFile(String fileName) => File('${read(dirPathProvider)}${fileName}');
+  File getFile(String fileName) => File('${read(dirPathProvider)}$fileName');
 
   Future<void> save(String fileName) async {
     await createDirectoryIfNotExist();
-    final file = await getFile(fileName);
-    var sink = file.openWrite();
-    sink.write(_stringBuffer.toString());
+    final file = getFile(fileName);
+    var sink = file.openWrite()..write(_stringBuffer.toString());
     _stringBuffer.clear();
     await sink.close();
 

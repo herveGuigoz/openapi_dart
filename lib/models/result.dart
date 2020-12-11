@@ -20,7 +20,7 @@ abstract class Result<T> with _$Result<T> {
   T get dataOrThrow {
     return when(
       data: (value) => value,
-      error: (err) {
+      error: (dynamic err) {
         throw err;
       },
     );
@@ -29,7 +29,7 @@ abstract class Result<T> with _$Result<T> {
   void onError(void Function(dynamic error) cb) {
     when(
       data: (_) {},
-      error: (err) => cb(err),
+      error: (dynamic err) => cb(err),
     );
   }
 }
