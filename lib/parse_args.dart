@@ -37,7 +37,9 @@ class Args {
     final path = argResults['path'] as String;
     final method = argResults['method'] as String;
 
-    if (argResults['help'] || remote == null || path == null) return _help();
+    if (argResults['help'] == true || remote == null || path == null) {
+      return _help();
+    }
 
     return main(remote, path, method);
   }

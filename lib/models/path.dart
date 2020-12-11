@@ -15,6 +15,18 @@ abstract class Path implements _$Path {
     @required List<Ressource> ressources,
   }) = _Path;
 
+  factory Path.fromKeyValue(String key, Map<String, Object> value) {
+    final ressources = <Ressource>[];
+    value.forEach((key, value) {
+      ressources.add(Ressource.fromKeyValue(key, value as Map<String, Object>));
+    });
+
+    return Path(
+      iri: key,
+      ressources: ressources,
+    );
+  }
+
   Ressource getRessourceByMethod(String method) {
     final _method = method.toLowerCase();
 
@@ -25,20 +37,9 @@ abstract class Path implements _$Path {
     return ressources.firstWhere(
       (ressource) => ressource.name == _method,
       orElse: () => throw ArgumentError(
+        // ignore: lines_longer_than_80_chars
         '${_method.toUpperCase()} method not found in specifications. ${ressources.map((e) => e.name.toUpperCase()).toList()}',
       ),
-    );
-  }
-
-  factory Path.fromKeyValue(String key, Map<String, Object> value) {
-    final ressources = <Ressource>[];
-    value.forEach((key, value) {
-      ressources.add(Ressource.fromKeyValue(key, value));
-    });
-
-    return Path(
-      iri: key,
-      ressources: ressources,
     );
   }
 }
@@ -64,7 +65,7 @@ abstract class Ressource implements _$Ressource {
     final responses = <Response>[];
     if (value['responses'] != null) {
       (value['responses'] as Map<String, Object>).forEach((key, value) {
-        responses.add(Response.fromKeyValue(key, value));
+        responses.add(Response.fromKeyValue(key, value as Map<String, Object>));
       });
     }
 
