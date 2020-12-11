@@ -58,7 +58,9 @@ class DefinitionPrinter extends FileManager {
 
     indent('const $_className({');
     for (final property in definition.properties) {
-      indent('this.${property.name},', 2);
+      _isRequiredProperty(property)
+          ? indent('@required this.${property.name},', 2)
+          : indent('this.${property.name},', 2);
     }
     indent('});\n');
   }
@@ -70,8 +72,14 @@ class DefinitionPrinter extends FileManager {
       if (property?.description != null) {
         indent('// ${property.description}');
       }
+
       indent('final ${type} ${property.name};');
     }
+  }
+
+  bool _isRequiredProperty(Property property) {
+    final requiredProperties = definition?.requiredProperties ?? [];
+    return requiredProperties.contains(property.name);
   }
 
   Future<void> _generateChildIfHasReferenceOnDocument(Property property) async {

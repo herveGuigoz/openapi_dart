@@ -83,7 +83,9 @@ final propertyTypeToString = Provider.family<String, Property>((ref, param) {
 });
 
 /// Where all `part '...';` will be saved.
-final stringBufferProvider = Provider((_) => StringBuffer());
+final stringBufferProvider = Provider(
+  (_) => StringBuffer()..writeln("import 'package:meta/meta.dart';\n"),
+);
 
 /// Generate file for given Definition.
 final writeToFile = FutureProvider.autoDispose.family<void, Definition>(
