@@ -76,10 +76,10 @@ final propertyTypeToString = Provider.family<String, Property>((ref, param) {
 
   final def = ref.read(definitionProvider(param.ref));
   if (param?.subType == null) {
-    return '${def.entity}';
+    return '_${def.entity}';
   }
 
-  return 'List<${def.entity}>';
+  return 'List<_${def.entity}>';
 });
 
 /// Where all `part '...';` will be saved.
@@ -87,5 +87,9 @@ final stringBufferProvider = Provider((_) => StringBuffer());
 
 /// Generate file for given Definition.
 final writeToFile = FutureProvider.autoDispose.family<void, Definition>(
-  (ref, def) async => DefinitionPrinter(ref.read, def).generate(),
+  (ref, def) async => DefinitionPrinter(
+    ref.read,
+    def,
+    isMainClass: true,
+  ).generate(),
 );

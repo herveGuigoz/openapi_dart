@@ -9,14 +9,24 @@ class DefinitionPrinter extends FileManager {
   DefinitionPrinter(
     Reader read,
     this.definition, {
-    this.markClassAsPrivate = false,
+    this.isMainClass = false,
   }) : super(read);
 
   final Definition definition;
-  final bool markClassAsPrivate;
+  final bool isMainClass;
 
-  String get _className => definition.entity;
-  String get _fileName => '${_className.toFileName()}.dart';
+  String get _className {
+    return isMainClass
+        ? '${definition.entity}GetResponse'
+        : '_${definition.entity}';
+  }
+
+  String get _fileName {
+    var name = _className.toFileName();
+    if (name[0] == '_') name = name.substring(1);
+
+    return '$name.dart';
+  }
 
   Future<void> generate() async {
     _writeImports();
@@ -46,7 +56,7 @@ class DefinitionPrinter extends FileManager {
 
     write('class $_className {');
 
-    indent('$_className({');
+    indent('const $_className({');
     for (final property in definition.properties) {
       indent('this.${property.name},', 2);
     }
@@ -67,10 +77,6 @@ class DefinitionPrinter extends FileManager {
   Future<void> _generateChildIfHasReferenceOnDocument(Property property) async {
     if (!property.hasDefinition) return;
     final newDefToWrite = read(definitionProvider(property.ref));
-    await DefinitionPrinter(
-      read,
-      newDefToWrite,
-      markClassAsPrivate: true,
-    ).generate();
+    await DefinitionPrinter(read, newDefToWrite).generate();
   }
 }
