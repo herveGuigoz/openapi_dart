@@ -17,4 +17,4 @@ dart bin/openapi_dart.dart -r https://petstore.swagger.io/v2/swagger.json -p /pe
 - use freezed option.
 - openApi v3.
 - generate api call method option
-- allow user to choose options (GET, POST, PUT, DELETE)
+- make work all options (POST, PUT, DELETE)

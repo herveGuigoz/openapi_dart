@@ -7,12 +7,21 @@ class Args {
     ..addOption(
       'remote',
       abbr: 'r',
-      help: 'Swagger documentation url.',
+      valueHelp: '../docs.json',
+      help: 'OpenApi documentation url.',
     )
     ..addOption(
       'path',
       abbr: 'p',
-      help: 'Open Api Path to parse.',
+      valueHelp: '/books/{id}',
+      help: 'OpenApi Path to translate.',
+    )
+    ..addOption(
+      'method',
+      abbr: 'm',
+      allowed: ['GET', 'POST', 'PUT'],
+      help: 'Request method to translate.',
+      defaultsTo: 'GET',
     )
     ..addFlag(
       'help',
@@ -26,10 +35,11 @@ class Args {
 
     final remote = argResults['remote'] as String;
     final path = argResults['path'] as String;
+    final method = argResults['method'] as String;
 
     if (argResults['help'] || remote == null || path == null) return _help();
 
-    return main(remote, path);
+    return main(remote, path, method);
   }
 
   static void _help() => print('usage:\n${_argsParser.usage}');

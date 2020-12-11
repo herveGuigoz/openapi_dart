@@ -6,11 +6,12 @@ import 'models/path.dart';
 import 'output/file_manager.dart';
 import 'providers.dart';
 
-Future<void> main(String url, String path) async {
+Future<void> main(String url, String path, String method) async {
   final container = ProviderContainer(
     overrides: [
       urlProvider.overrideWithValue(url),
       pathProvider.overrideWithValue(path),
+      methodProvider.overrideWithValue(method),
     ],
   );
 
@@ -23,14 +24,26 @@ Future<void> main(String url, String path) async {
   );
 
   /// get Path model.
-  final pathModel = container.read(pathModelProvider);
-  if (pathModel == null) {
-    stderr.writeln('error: undefine $path in specifications');
+  try {
+    container.read(pathModelProvider);
+  } catch (err) {
+    stderr.writeln('error: $err');
     exit(2);
   }
 
-  /// get definition reference for method (GET, PUT, POST, DELETE).
-  final ref = _getDefinitionForGivenPathAndMethod(pathModel);
+  /// get definition reference for method (GET, PUT, POST).
+  String ref;
+  try {
+    final responseModel = container.read(getResponseForPathAndMethod);
+    ref = responseModel.ref;
+  } catch (err) {
+    stderr.writeln('error: $err');
+    exit(2);
+  }
+  if (ref == null) {
+    stderr.writeln('error: No definition found in specification');
+    exit(2);
+  }
 
   /// get Definition model.
   final def = container.read(definitionProvider(ref));
@@ -46,18 +59,18 @@ Future<void> main(String url, String path) async {
   return;
 }
 
-String _getDefinitionForGivenPathAndMethod(Path path) {
-  String ref;
-  try {
-    ref = path.getRessourceByMethod('get')?.responses?.first?.ref;
-  } catch (err) {
-    stderr.writeln('error: $err');
-    exit(2);
-  }
-  if (ref == null) {
-    stderr.writeln('error: No definition found in specification');
-    exit(2);
-  }
+// String _getDefinitionForGivenPathAndMethod(Path path) {
+//   String ref;
+//   try {
+//     ref = path.getRessourceByMethod('get')?.responses?.first?.ref;
+//   } catch (err) {
+//     stderr.writeln('error: $err');
+//     exit(2);
+//   }
+//   if (ref == null) {
+//     stderr.writeln('error: No definition found in specification');
+//     exit(2);
+//   }
 
-  return ref;
-}
+//   return ref;
+// }

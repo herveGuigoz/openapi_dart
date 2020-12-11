@@ -14,6 +14,8 @@ final urlProvider = Provider<String>(null);
 /// User path to request as String
 final pathProvider = Provider<String>(null);
 
+final methodProvider = Provider<String>(null);
+
 /// Output directory for generated files.
 final dirPathProvider = Provider((_) => 'build/');
 
@@ -68,8 +70,18 @@ final pathModelProvider = Provider<Path>((ref) {
   final param = ref.read(pathProvider);
   return ref.read(pathsProvider).firstWhere(
         (path) => path.iri == param,
-        orElse: () => null,
+        orElse: () => throw ArgumentError(
+          'error: undefine $param in specifications',
+        ),
       );
+});
+
+final getResponseForPathAndMethod = Provider<Response>((ref) {
+  final path = ref.read(pathModelProvider);
+  final method = ref.read(methodProvider).toLowerCase();
+  final response = path.getRessourceByMethod(method)?.responses?.first;
+
+  return response;
 });
 
 /// Translate openApi Property type to dart as String.

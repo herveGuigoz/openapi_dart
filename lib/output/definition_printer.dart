@@ -29,10 +29,7 @@ class DefinitionPrinter extends FileManager {
     return '$name.dart';
   }
 
-  // todo allow others methods (POST, PUT, etc..) so make
-  // getRessourceByMethod a provider.
-  Response get _responseModel =>
-      read(pathModelProvider).getRessourceByMethod('get').responses?.first;
+  Response get _responseModel => read(getResponseForPathAndMethod);
 
   Future<void> generate() async {
     _writeImports();
