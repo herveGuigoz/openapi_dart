@@ -1,23 +1,24 @@
 import 'package:riverpod/riverpod.dart';
 
 import '../models/definition.dart';
-import 'file_manager.dart';
+import '../models/path.dart';
 import '../providers.dart';
 import '../utils.dart';
+import 'file_manager.dart';
 
 class DefinitionPrinter extends FileManager {
   DefinitionPrinter(
     Reader read,
     this.definition, {
-    this.isMainClass = false,
+    this.isRequestDefinition = false,
   }) : super(read);
 
   final Definition definition;
-  final bool isMainClass;
+  final bool isRequestDefinition;
 
   String get _className {
-    return isMainClass
-        ? '${definition.entity}GetResponse'
+    return isRequestDefinition
+        ? _responseModel?.description?.withoutBlankCharacters ?? 'Response'
         : '_${definition.entity}';
   }
 
@@ -27,6 +28,11 @@ class DefinitionPrinter extends FileManager {
 
     return '$name.dart';
   }
+
+  // todo allow others methods (POST, PUT, etc..) so make
+  // getRessourceByMethod a provider.
+  Response get _responseModel =>
+      read(pathModelProvider).getRessourceByMethod('get').responses?.first;
 
   Future<void> generate() async {
     _writeImports();

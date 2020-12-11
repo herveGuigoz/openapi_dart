@@ -8,7 +8,10 @@ import 'providers.dart';
 
 Future<void> main(String url, String path) async {
   final container = ProviderContainer(
-    overrides: [urlProvider.overrideWithValue(url)],
+    overrides: [
+      urlProvider.overrideWithValue(url),
+      pathProvider.overrideWithValue(path),
+    ],
   );
 
   /// load open api documentation.
@@ -20,7 +23,7 @@ Future<void> main(String url, String path) async {
   );
 
   /// get Path model.
-  final pathModel = container.read(pathProvider(path));
+  final pathModel = container.read(pathModelProvider);
   if (pathModel == null) {
     stderr.writeln('error: undefine $path in specifications');
     exit(2);

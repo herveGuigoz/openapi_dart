@@ -57,6 +57,7 @@ class Ressource {
   Ressource({
     @required this.name,
     @required this.tag,
+    @required this.operationId,
     this.summary,
     this.responses,
   });
@@ -64,11 +65,13 @@ class Ressource {
   final String name;
   final String tag;
   final String summary;
+  final String operationId;
   final List<Response> responses;
 
   factory Ressource.fromKeyValue(String key, Map<String, Object> value) {
     final summary = value['summary'] as String;
     final tags = value['tags'] as List;
+    final operationId = value['operationId'] as String;
 
     final responses = <Response>[];
     if (value['responses'] != null) {
@@ -80,6 +83,7 @@ class Ressource {
     return Ressource(
       name: key,
       tag: tags[0] as String,
+      operationId: operationId,
       summary: summary,
       responses: responses,
     );

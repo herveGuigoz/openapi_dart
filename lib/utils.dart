@@ -24,4 +24,23 @@ extension StringExt on String {
 
     return res;
   }
+
+  /// Returns a string with capitalized first character.
+  String get capitalize {
+    if (isEmpty) return this;
+
+    return this[0].toUpperCase() + substring(1);
+  }
+
+  String get withoutBlankCharacters =>
+      split(' ').map((e) => e.capitalize).join();
+}
+
+// Returns the joined elements of the list if the list is not null; otherwise null.
+String join(List list, [String separator = '']) {
+  if (list == null) {
+    return null;
+  }
+
+  return list.join(separator);
 }

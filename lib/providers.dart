@@ -11,12 +11,15 @@ import 'output/definition_printer.dart';
 /// OpenApi documentation url.
 final urlProvider = Provider<String>(null);
 
+/// User path to request as String
+final pathProvider = Provider<String>(null);
+
 /// Output directory for generated files.
 final dirPathProvider = Provider((_) => 'build/');
 
 /// Parent file name where all `Part '...';` will be injected.
 final mainFileNameProvider = Provider<String>((ref) {
-  return 'output.dart';
+  return 'models.dart';
 });
 
 /// Network call to load openApi documetation.
@@ -61,7 +64,8 @@ final pathsProvider = Provider<List<Path>>((ref) {
 });
 
 /// Find given Path in openApi documentation.
-final pathProvider = Provider.family<Path, String>((ref, param) {
+final pathModelProvider = Provider<Path>((ref) {
+  final param = ref.read(pathProvider);
   return ref.read(pathsProvider).firstWhere(
         (path) => path.iri == param,
         orElse: () => null,
@@ -92,6 +96,6 @@ final writeToFile = FutureProvider.autoDispose.family<void, Definition>(
   (ref, def) async => DefinitionPrinter(
     ref.read,
     def,
-    isMainClass: true,
+    isRequestDefinition: true,
   ).generate(),
 );
