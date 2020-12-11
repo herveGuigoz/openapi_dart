@@ -1,6 +1,6 @@
 # 📘️ openapi-dart
 
-🚀 Convert [2.0 (Swagger)](https://swagger.io/specification/v2/) path to Dart class.
+🚀 Bild Dart class from Open Api ([Swagger]((https://swagger.io/specification/v2/))) documentation.
 
 ## Usage
 
