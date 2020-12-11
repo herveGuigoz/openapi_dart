@@ -1,41 +1,33 @@
-import 'package:args/args.dart';
-import 'package:swagger_models_generator/output/file_manager.dart';
+import 'dart:io';
 
-import 'models/models.dart';
-import 'network/repository.dart';
-import 'output/class_manager.dart';
+import 'package:riverpod/all.dart';
+
+import 'providers.dart';
 
 Future<void> main(String url, String iri) async {
-  final files = <String>[];
+  final container = ProviderContainer(
+    overrides: [urlProvider.overrideWithValue(url)],
+  );
 
-  final response = await Repository.loadJson(url);
-  final doc = Document.fromRawJson(response);
+  /// load open api documentation.
+  await container.read(specsProvider.future).catchError(
+    (err) {
+      stderr.writeln('error: $url is invalid');
+      exit(2);
+    },
+  );
 
-  final methodGET = doc.getPathByName(iri).methodGET;
+  /// get Path model.
+  final path = container.read(pathProvider(iri));
 
-  final definition = doc.getDefinitionByName(methodGET.ref);
+  /// get definition reference for GET method.
+  final ref = path.getRessource.responses.first.ref;
 
-  await ClassManager(definition).generate().then((value) => files.add(value));
+  /// get Definition model.
+  final def = container.read(definitionProvider(ref));
 
-  final refs = definition.refs;
-  for (final ref in refs) {
-    await ClassManager(doc.getDefinitionByName(ref))
-        .generate()
-        .then((value) => files.add(value));
-    ;
-  }
-
-  await ModelsFileManager().writeModelsFile(files);
+  /// write file(s).
+  await container.read(writeToFile(def).future);
 
   return;
-}
-
-class ModelsFileManager extends FileManager {
-  Future<void> writeModelsFile(List<String> files) async {
-    for (final file in files) {
-      write("part '$file';");
-    }
-
-    await save('models.dart');
-  }
 }

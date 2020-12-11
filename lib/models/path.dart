@@ -1,34 +1,102 @@
-part of 'models.dart';
+import 'package:meta/meta.dart';
+import '../utils.dart';
 
 class Path {
-  Path({this.name, this.methods});
+  Path({this.iri, this.ressources});
+
+  final String iri;
+  final List<Ressource> ressources;
+
+  Ressource get getRessource => ressources.firstWhere(
+        (ressource) => ressource.name == 'get',
+        orElse: () => null,
+      );
+
+  factory Path.fromKeyValue(String key, Map<String, Object> value) {
+    final ressources = <Ressource>[];
+    value.forEach((key, value) {
+      ressources.add(Ressource.fromKeyValue(key, value));
+    });
+
+    return Path(
+      iri: key,
+      ressources: ressources,
+    );
+  }
+
+  @override
+  String toString() => 'name: $iri, ressources: $ressources)';
+}
+
+class Ressource {
+  Ressource({
+    @required this.name,
+    @required this.tag,
+    this.summary,
+    this.responses,
+  });
 
   final String name;
-  final List<Method> methods;
+  final String tag;
+  final String summary;
+  final List<Response> responses;
 
-  bool get hasMethodGET => methods.whereType<Get>().isNotEmpty;
-  Get get methodGET => hasMethodGET ? methods.whereType<Get>().first : null;
+  factory Ressource.fromKeyValue(String key, Map<String, Object> value) {
+    final summary = value['summary'] as String;
+    final tags = value['tags'] as List;
 
-  factory Path.fromJson(String key, Map<String, Object> value) {
-    final methods = <Method>[];
-    value.forEach((key, value) => methods.add(Method.fromJson(key, value)));
+    final responses = <Response>[];
+    if (value['responses'] != null) {
+      (value['responses'] as Map<String, Object>).forEach((key, value) {
+        responses.add(Response.fromKeyValue(key, value));
+      });
+    }
 
-    return Path(name: key, methods: methods);
+    return Ressource(
+      name: key,
+      tag: tags[0] as String,
+      summary: summary,
+      responses: responses,
+    );
   }
 
   @override
-  String toString() => 'Path(name: $name, methods: $methods)';
+  String toString() => '$name: $tag';
+}
 
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    final listEquals = const DeepCollectionEquality().equals;
+class Response {
+  Response({
+    @required this.code,
+    this.description,
+    this.ref,
+  });
 
-    return other is Path &&
-        other.name == name &&
-        listEquals(other.methods, methods);
+  final int code;
+  final String description;
+  final String ref;
+
+  factory Response.fromKeyValue(String key, Map<String, Object> value) {
+    final description =
+        value['description'] != null ? value['description'] as String : null;
+
+    String ref;
+    final schema =
+        value['schema'] != null ? value['schema'] as Map<String, Object> : null;
+
+    if (schema != null && schema[r'$ref'] != null) {
+      ref = schema[r'$ref'] as String;
+    } else if (schema != null) {
+      final items = schema['items'] as Map<String, Object>;
+      ref = items[r'$ref'] as String;
+    }
+
+    return Response(
+      code: int.parse(key),
+      description: description,
+      ref: ref?.allAfter('#/definitions/'),
+    );
   }
 
   @override
-  int get hashCode => name.hashCode ^ methods.hashCode;
+  String toString() => '\n$code, ref: $ref';
 }

@@ -10,12 +10,6 @@ extension StringExt on String {
     return '';
   }
 
-  String capitalize() {
-    if (isEmpty) return this;
-
-    return this[0].toUpperCase() + substring(1);
-  }
-
   String toFileName() {
     var res = this;
     final pattern = '[A-Z]';
