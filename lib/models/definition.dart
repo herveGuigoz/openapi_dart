@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 import '../utils.dart';
 
-// utils to output List<...>
+// Util to output List<...> as Dart Type.
 class Array {}
 
 class Definition {
@@ -48,18 +48,20 @@ class Definition {
   }
 
   @override
-  String toString() => entity;
+  String toString() {
+    return 'Definition(name: $name, description: $description, properties: $properties, requiredProperties: $requiredProperties)';
+  }
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 
-    return o is Definition &&
-        o.name == name &&
-        o.description == description &&
-        listEquals(o.properties, properties) &&
-        listEquals(o.requiredProperties, requiredProperties);
+    return other is Definition &&
+        other.name == name &&
+        other.description == description &&
+        listEquals(other.properties, properties) &&
+        listEquals(other.requiredProperties, requiredProperties);
   }
 
   @override
@@ -133,15 +135,15 @@ class Property {
   }
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
 
-    return o is Property &&
-        o.name == name &&
-        o.type == type &&
-        o.subType == subType &&
-        o.ref == ref &&
-        o.description == description;
+    return other is Property &&
+        other.name == name &&
+        other.type == type &&
+        other.subType == subType &&
+        other.ref == ref &&
+        other.description == description;
   }
 
   @override
@@ -151,5 +153,10 @@ class Property {
         subType.hashCode ^
         ref.hashCode ^
         description.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'Property(name: $name, type: $type, subType: $subType, ref: $ref, description: $description)';
   }
 }

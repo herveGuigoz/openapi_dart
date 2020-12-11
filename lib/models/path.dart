@@ -1,4 +1,6 @@
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
+
 import '../utils.dart';
 
 class Path {
@@ -25,7 +27,20 @@ class Path {
   }
 
   @override
-  String toString() => 'name: $iri, ressources: $ressources)';
+  String toString() => 'Path(iri: $iri, ressources: $ressources)';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    final listEquals = const DeepCollectionEquality().equals;
+
+    return other is Path &&
+        other.iri == iri &&
+        listEquals(other.ressources, ressources);
+  }
+
+  @override
+  int get hashCode => iri.hashCode ^ ressources.hashCode;
 }
 
 class Ressource {
@@ -61,7 +76,26 @@ class Ressource {
   }
 
   @override
-  String toString() => '$name: $tag';
+  String toString() {
+    return 'Ressource(name: $name, tag: $tag, summary: $summary, responses: $responses)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    final listEquals = const DeepCollectionEquality().equals;
+
+    return other is Ressource &&
+        other.name == name &&
+        other.tag == tag &&
+        other.summary == summary &&
+        listEquals(other.responses, responses);
+  }
+
+  @override
+  int get hashCode {
+    return name.hashCode ^ tag.hashCode ^ summary.hashCode ^ responses.hashCode;
+  }
 }
 
 class Response {
@@ -98,5 +132,19 @@ class Response {
   }
 
   @override
-  String toString() => '\n$code, ref: $ref';
+  String toString() =>
+      'Response(code: $code, description: $description, ref: $ref)';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Response &&
+        other.code == code &&
+        other.description == description &&
+        other.ref == ref;
+  }
+
+  @override
+  int get hashCode => code.hashCode ^ description.hashCode ^ ref.hashCode;
 }
