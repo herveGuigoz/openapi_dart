@@ -4,7 +4,6 @@ import 'package:riverpod/riverpod.dart';
 
 import '../constantes.dart';
 import '../providers.dart';
-import '../utils.dart';
 
 class FileManager {
   FileManager(
@@ -15,8 +14,7 @@ class FileManager {
   final StringBuffer _stringBuffer;
   Reader read;
 
-  File getFile(String fileName) =>
-      File('$kOutputsDirectory${fileName.toFileName()}');
+  File getFile(String fileName) => File('${read(dirPathProvider)}${fileName}');
 
   Future<void> save(String fileName) async {
     await createDirectoryIfNotExist();
@@ -38,7 +36,7 @@ class FileManager {
   }
 
   Future<void> createDirectoryIfNotExist() async {
-    final dirPath = read(directoryProvider);
+    final dirPath = read(dirPathProvider);
     final dir = Directory(dirPath);
     await dir.create(recursive: true);
   }

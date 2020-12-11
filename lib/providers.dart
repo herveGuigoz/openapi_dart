@@ -12,7 +12,7 @@ import 'output/definition_printer.dart';
 final urlProvider = Provider<String>(null);
 
 /// Output directory for generated files.
-final directoryProvider = Provider((_) => 'build');
+final dirPathProvider = Provider((_) => 'build/');
 
 /// Parent file name where all `Part '...';` will be injected.
 final mainFileNameProvider = Provider<String>((ref) {

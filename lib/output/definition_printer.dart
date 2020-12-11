@@ -8,10 +8,15 @@ import '../utils.dart';
 class DefinitionPrinter extends FileManager {
   DefinitionPrinter(
     Reader read,
-    this.definition,
-  ) : super(read);
+    this.definition, {
+    this.markClassAsPrivate = false,
+  }) : super(read);
 
   final Definition definition;
+  final bool markClassAsPrivate;
+
+  String get _className => definition.entity;
+  String get _fileName => '${_className.toFileName()}.dart';
 
   Future<void> generate() async {
     _writeImports();
@@ -19,13 +24,13 @@ class DefinitionPrinter extends FileManager {
     await _writeProperties();
     write('}');
 
-    await save('${definition.entity}.dart');
+    await save(_fileName);
   }
 
   void _writeImports() {
     final mainFileName = read(mainFileNameProvider);
     final stringBuffer = read(stringBufferProvider);
-    final output = "part '${definition.entity.toFileName()}.dart';";
+    final output = "part '$_fileName';";
 
     if (!RegExp(output).hasMatch(stringBuffer.toString())) {
       stringBuffer.writeln(output);
@@ -38,8 +43,10 @@ class DefinitionPrinter extends FileManager {
     if (definition?.description != null) {
       write('/// ${definition.description}');
     }
-    write('class ${definition.entity} {');
-    indent('${definition.entity}({');
+
+    write('class $_className {');
+
+    indent('$_className({');
     for (final property in definition.properties) {
       indent('this.${property.name},', 2);
     }
@@ -60,6 +67,10 @@ class DefinitionPrinter extends FileManager {
   Future<void> _generateChildIfHasReferenceOnDocument(Property property) async {
     if (!property.hasDefinition) return;
     final newDefToWrite = read(definitionProvider(property.ref));
-    await DefinitionPrinter(read, newDefToWrite).generate();
+    await DefinitionPrinter(
+      read,
+      newDefToWrite,
+      markClassAsPrivate: true,
+    ).generate();
   }
 }
