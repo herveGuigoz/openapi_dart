@@ -2,9 +2,15 @@ import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../utils.dart';
+import '../utils/json_parser.dart';
+import '../utils/string_extensions.dart';
 
 part 'definition.freezed.dart';
+
+extension DefinitionIterable on Iterable<Definition> {
+  Definition byName(String name) =>
+      firstWhere((def) => def.name == name, orElse: () => null);
+}
 
 // Util to output List<...> as Dart Type.
 abstract class Array {}
@@ -20,30 +26,23 @@ abstract class Definition implements _$Definition {
     List<String> requiredProperties,
   }) = _Definition;
 
-  factory Definition.fromKeyValue(String key, Map<String, Object> value) {
-    final description =
-        value['description'] != null ? value['description'] as String : null;
-
-    final requiredProperties = value['required'] != null
-        ? (value['required'] as Iterable)
-            .map((dynamic e) => e as String)
-            .toList()
-        : <String>[];
-
-    var properties = <Property>[];
-    if (value['properties'] != null) {
-      (value['properties'] as Map<String, Object>).forEach((key, value) {
-        properties.add(
-          Property.fromKeyValue(key, value as Map<String, Object>),
-        );
-      });
-    }
+  factory Definition.fromKeyValue(String key, Map<String, Object> json) {
+    final description = JsonParser.parseKey<String>(json, 'description');
+    final requiredProps = JsonParser.parseIterable<String>(json, 'required');
 
     return Definition(
       name: key,
       description: description?.isNotEmpty ?? false ? description : null,
-      requiredProperties: requiredProperties,
-      properties: properties,
+      requiredProperties: requiredProps,
+      properties: JsonParser.parseListOfMapByKey<Property, Map<String, Object>>(
+        json: json,
+        key: 'properties',
+        builder: (key, value) => Property.fromKeyValue(key, value),
+      )
+          .map((property) => requiredProps.contains(property.name)
+              ? property.copyWith(isRequired: true)
+              : property)
+          .toList(),
     );
   }
 
@@ -63,44 +62,28 @@ abstract class Property implements _$Property {
     Type subType,
     String ref,
     String description,
+    @Default(false) bool isRequired,
   }) = _Property;
 
   factory Property.fromKeyValue(String key, Map<String, Object> value) {
-    final description =
-        value['description'] != null ? value['description'] as String : null;
-
-    var ref = value[r'$ref'] != null ? value[r'$ref'] as String : null;
-    if (ref == null && value['items'] != null) {
-      if ((value['items'] as Map<String, Object>)[r'$ref'] != null) {
-        ref = (value['items'] as Map<String, Object>)[r'$ref'] as String;
-      }
-    }
-
-    final type = _getType(value);
-    Type subType;
-
-    final items =
-        value['items'] != null ? value['items'] as Map<String, Object> : null;
-
-    if (items != null) {
-      subType = _getType(items);
-    }
+    var ref = JsonParser.parseSchema(value);
+    final items = JsonParser.parseKey<Map<String, Object>>(value, 'items');
 
     return Property(
       name: key,
-      type: type,
-      subType: subType,
+      type: _getType(value),
+      subType: items != null ? _getType(items) : null,
       ref: ref?.allAfter('#/definitions/'),
-      description: description,
+      description: JsonParser.parseKey(value, 'description'),
     );
   }
 
   bool get hasDefinition => type == Definition || subType == Definition;
   bool get isArray => type == Array;
 
-  static Type _getType(Map<String, Object> value) {
-    final type = value['type'] as String;
-    final ref = value[r'$ref'] != null ? value[r'$ref'] as String : null;
+  static Type _getType(Map<String, Object> json) {
+    final type = json['type'] as String;
+    final ref = JsonParser.parseKey<String>(json, r'$ref');
 
     if (ref != null) return Definition;
     if (type == 'string') return String;

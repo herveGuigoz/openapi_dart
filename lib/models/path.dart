@@ -2,7 +2,8 @@ import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../utils.dart';
+import '../utils/json_parser.dart';
+import '../utils/string_extensions.dart';
 
 part 'path.freezed.dart';
 
@@ -16,14 +17,12 @@ abstract class Path implements _$Path {
   }) = _Path;
 
   factory Path.fromKeyValue(String key, Map<String, Object> value) {
-    final ressources = <Ressource>[];
-    value.forEach((key, value) {
-      ressources.add(Ressource.fromKeyValue(key, value as Map<String, Object>));
-    });
-
     return Path(
       iri: key,
-      ressources: ressources,
+      ressources: JsonParser.parseListOfMap<Ressource, Map<String, Object>>(
+        value,
+        (key, value) => Ressource.fromKeyValue(key, value),
+      ),
     );
   }
 
@@ -35,10 +34,9 @@ abstract class Path implements _$Path {
     }
 
     return ressources.firstWhere(
-      (ressource) => ressource.name == _method,
+      (ressource) => ressource.method == _method,
       orElse: () => throw ArgumentError(
-        // ignore: lines_longer_than_80_chars
-        '${_method.toUpperCase()} method not found in specifications. ${ressources.map((e) => e.name.toUpperCase()).toList()}',
+        '${_method.toUpperCase()} method not found in specifications.',
       ),
     );
   }
@@ -49,7 +47,7 @@ abstract class Ressource implements _$Ressource {
   const Ressource._();
 
   const factory Ressource({
-    @required String name,
+    @required String method,
     @required String tag,
     @required String operationId,
     String summary,
@@ -58,23 +56,16 @@ abstract class Ressource implements _$Ressource {
   }) = _Ressource;
 
   factory Ressource.fromKeyValue(String key, Map<String, Object> value) {
-    final summary = value['summary'] as String;
-    final tags = value['tags'] as List;
-    final operationId = value['operationId'] as String;
-
-    final responses = <Response>[];
-    if (value['responses'] != null) {
-      (value['responses'] as Map<String, Object>).forEach((key, value) {
-        responses.add(Response.fromKeyValue(key, value as Map<String, Object>));
-      });
-    }
-
     return Ressource(
-      name: key,
-      tag: tags[0] as String,
-      operationId: operationId,
-      summary: summary,
-      responses: responses,
+      method: key,
+      tag: JsonParser.parseKey<List>(value, 'tags')[0] as String,
+      operationId: JsonParser.parseKey<String>(value, 'operationId'),
+      summary: JsonParser.parseKey<String>(value, 'summary'),
+      responses: JsonParser.parseListOfMapByKey<Response, Map<String, Object>>(
+        json: value,
+        key: 'responses',
+        builder: (key, value) => Response.fromKeyValue(key, value),
+      ), //.where((response) => response.hasDefinition).toList(),
       // requests: requests,
     );
   }
@@ -91,26 +82,14 @@ abstract class Response implements _$Response {
   }) = _Response;
 
   factory Response.fromKeyValue(String key, Map<String, Object> value) {
-    final description =
-        value['description'] != null ? value['description'] as String : null;
-
-    String ref;
-    final schema =
-        value['schema'] != null ? value['schema'] as Map<String, Object> : null;
-
-    if (schema != null && schema[r'$ref'] != null) {
-      ref = schema[r'$ref'] as String;
-    } else if (schema != null) {
-      final items = schema['items'] as Map<String, Object>;
-      ref = items[r'$ref'] as String;
-    }
-
     return Response(
       code: int.parse(key),
-      description: description,
-      ref: ref?.allAfter('#/definitions/'),
+      description: JsonParser.parseKey<String>(value, 'description'),
+      ref: JsonParser.parseSchema(value)?.allAfter('#/definitions/'),
     );
   }
+
+  bool get hasDefinition => ref != null;
 }
 
 @freezed
@@ -125,17 +104,12 @@ abstract class Parameter implements _$Parameter {
     String description,
   }) = _Parameter;
 
-  factory Parameter.fromJson(Map<String, Object> value) {
-    final name = value['name'] as String;
-    final description = value['description'] as String;
-    final origin = value['in'] as String;
-    final ref = (value['schema'] as Map<String, Object>)[r'$ref'] as String;
-
+  factory Parameter.fromJson(Map<String, Object> json) {
     return Parameter(
-      name: name,
-      description: description,
-      origin: origin,
-      ref: ref,
+      name: json['name'] as String,
+      description: JsonParser.parseKey(json, 'description'),
+      origin: JsonParser.parseKey(json, 'in'),
+      ref: JsonParser.parseSchema(json),
     );
   }
 }

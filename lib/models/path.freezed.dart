@@ -152,13 +152,13 @@ class _$RessourceTearOff {
 
 // ignore: unused_element
   _Ressource call(
-      {@required String name,
+      {@required String method,
       @required String tag,
       @required String operationId,
       String summary,
       List<Response> responses}) {
     return _Ressource(
-      name: name,
+      method: method,
       tag: tag,
       operationId: operationId,
       summary: summary,
@@ -173,7 +173,7 @@ const $Ressource = _$RessourceTearOff();
 
 /// @nodoc
 mixin _$Ressource {
-  String get name;
+  String get method;
   String get tag;
   String get operationId;
   String get summary;
@@ -187,7 +187,7 @@ abstract class $RessourceCopyWith<$Res> {
   factory $RessourceCopyWith(Ressource value, $Res Function(Ressource) then) =
       _$RessourceCopyWithImpl<$Res>;
   $Res call(
-      {String name,
+      {String method,
       String tag,
       String operationId,
       String summary,
@@ -204,14 +204,14 @@ class _$RessourceCopyWithImpl<$Res> implements $RessourceCopyWith<$Res> {
 
   @override
   $Res call({
-    Object name = freezed,
+    Object method = freezed,
     Object tag = freezed,
     Object operationId = freezed,
     Object summary = freezed,
     Object responses = freezed,
   }) {
     return _then(_value.copyWith(
-      name: name == freezed ? _value.name : name as String,
+      method: method == freezed ? _value.method : method as String,
       tag: tag == freezed ? _value.tag : tag as String,
       operationId:
           operationId == freezed ? _value.operationId : operationId as String,
@@ -229,7 +229,7 @@ abstract class _$RessourceCopyWith<$Res> implements $RessourceCopyWith<$Res> {
       __$RessourceCopyWithImpl<$Res>;
   @override
   $Res call(
-      {String name,
+      {String method,
       String tag,
       String operationId,
       String summary,
@@ -247,14 +247,14 @@ class __$RessourceCopyWithImpl<$Res> extends _$RessourceCopyWithImpl<$Res>
 
   @override
   $Res call({
-    Object name = freezed,
+    Object method = freezed,
     Object tag = freezed,
     Object operationId = freezed,
     Object summary = freezed,
     Object responses = freezed,
   }) {
     return _then(_Ressource(
-      name: name == freezed ? _value.name : name as String,
+      method: method == freezed ? _value.method : method as String,
       tag: tag == freezed ? _value.tag : tag as String,
       operationId:
           operationId == freezed ? _value.operationId : operationId as String,
@@ -268,18 +268,18 @@ class __$RessourceCopyWithImpl<$Res> extends _$RessourceCopyWithImpl<$Res>
 /// @nodoc
 class _$_Ressource extends _Ressource {
   const _$_Ressource(
-      {@required this.name,
+      {@required this.method,
       @required this.tag,
       @required this.operationId,
       this.summary,
       this.responses})
-      : assert(name != null),
+      : assert(method != null),
         assert(tag != null),
         assert(operationId != null),
         super._();
 
   @override
-  final String name;
+  final String method;
   @override
   final String tag;
   @override
@@ -291,15 +291,15 @@ class _$_Ressource extends _Ressource {
 
   @override
   String toString() {
-    return 'Ressource(name: $name, tag: $tag, operationId: $operationId, summary: $summary, responses: $responses)';
+    return 'Ressource(method: $method, tag: $tag, operationId: $operationId, summary: $summary, responses: $responses)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other is _Ressource &&
-            (identical(other.name, name) ||
-                const DeepCollectionEquality().equals(other.name, name)) &&
+            (identical(other.method, method) ||
+                const DeepCollectionEquality().equals(other.method, method)) &&
             (identical(other.tag, tag) ||
                 const DeepCollectionEquality().equals(other.tag, tag)) &&
             (identical(other.operationId, operationId) ||
@@ -316,7 +316,7 @@ class _$_Ressource extends _Ressource {
   @override
   int get hashCode =>
       runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(name) ^
+      const DeepCollectionEquality().hash(method) ^
       const DeepCollectionEquality().hash(tag) ^
       const DeepCollectionEquality().hash(operationId) ^
       const DeepCollectionEquality().hash(summary) ^
@@ -330,14 +330,14 @@ class _$_Ressource extends _Ressource {
 abstract class _Ressource extends Ressource {
   const _Ressource._() : super._();
   const factory _Ressource(
-      {@required String name,
+      {@required String method,
       @required String tag,
       @required String operationId,
       String summary,
       List<Response> responses}) = _$_Ressource;
 
   @override
-  String get name;
+  String get method;
   @override
   String get tag;
   @override
