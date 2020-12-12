@@ -2,13 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:openapi_dart/models/result.dart';
+import 'package:openapi_dart/utils/json_parser.dart';
 import 'package:riverpod/all.dart';
 
 import 'models/definition.dart';
 import 'models/path.dart';
-import 'models/reference.dart';
 import 'network/repository.dart';
-import 'output/response_printer.dart';
 
 /// OpenApi documentation url.
 final urlProvider = Provider<String>(null);
@@ -22,8 +21,8 @@ final methodProvider = Provider<String>(null);
 final dirPathProvider = Provider((_) => 'build/');
 
 /// Parent file name where all `Part '...';` will be injected.
-final mainFileNameProvider = Provider<String>((ref) {
-  return 'models.dart';
+final mainResponseFileNameProvider = Provider<String>((ref) {
+  return 'responses.dart';
 });
 
 /// Network call to load openApi documetation.
@@ -35,17 +34,17 @@ final specsProvider = FutureProvider<String>((ref) async {
 
 /// All Definition list in openApi documentation.
 final definitionsProvider = Provider<List<Definition>>((ref) {
-  final definitions = <Definition>[];
+  List<Definition> defs;
   ref.read(specsProvider).whenData((value) {
     final map = json.decode(value) as Map<String, Object>;
-    (map['definitions'] as Map<String, Object>).forEach((key, value) {
-      definitions.add(
-        Definition.fromKeyValue(key, value as Map<String, Object>),
-      );
-    });
+    defs = JsonParser.parseListOfMapByKey<Definition, Map<String, Object>>(
+      json: map,
+      key: 'definitions',
+      builder: (key, value) => Definition.fromKeyValue(key, value),
+    );
   });
 
-  return definitions;
+  return defs ?? <Definition>[];
 });
 
 /// Find given Definition in openApi documentation.
@@ -81,35 +80,16 @@ final pathModelProvider = Provider<Result<Path>>((ref) {
 });
 
 /// Get reference for response definition
-final getResponseForPathAndMethod = Provider<Result<Reference>>((ref) {
-  Reference reference;
+final getRessourcesForPath = Provider<Result<List<Ressource>>>((ref) {
+  List<Ressource> ressources;
   try {
     final path = ref.read(pathModelProvider).dataOrThrow;
-    final method = ref.read(methodProvider).toLowerCase();
-    final ressource = path.getRessourceByMethod(method);
-    reference = Reference(
-      value: ressource.responses.first.ref,
-      description: ressource.responses.first.description,
-    );
+    ressources = path.ressources;
   } catch (err) {
     return Result.error(err.toString());
   }
 
-  return Result.data(reference);
-});
-
-/// Translate openApi Property type to dart as String.
-final propertyTypeToString = Provider.family<String, Property>((ref, param) {
-  if (!param.hasDefinition) {
-    return param.type == Array ? 'List<${param.subType}>' : '${param.type}';
-  }
-
-  final def = ref.read(definitionProvider(param.ref));
-  if (param?.subType == null) {
-    return '_${def.entity}';
-  }
-
-  return 'List<_${def.entity}>';
+  return Result.data(ressources ?? <Ressource>[]);
 });
 
 /// Where all `part '...';` will be saved.
@@ -117,11 +97,11 @@ final stringBufferProvider = Provider(
   (_) => StringBuffer()..writeln("import 'package:meta/meta.dart';\n"),
 );
 
-/// Generate file for given Definition.
-final writeToFile = FutureProvider.autoDispose.family<void, Definition>(
-  (ref, def) async => ResponsePrinter(
-    ref.read,
-    def,
-    isRequestDefinition: true,
-  ).generate(),
-);
+// final filesControllerProvider = Provider<StateController<List<String>>>(
+//   (ref) => StateController<List<String>>(<String>[]),
+// );
+
+// final fileAlreadyCreated = Provider.family<bool, String>((ref, reference) {
+//   final controller = ref.watch(filesControllerProvider);
+//   return controller.state.contains(reference);
+// });

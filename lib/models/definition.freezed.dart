@@ -211,13 +211,15 @@ class _$PropertyTearOff {
       @required Type type,
       Type subType,
       String ref,
-      String description}) {
+      String description,
+      bool isRequired = false}) {
     return _Property(
       name: name,
       type: type,
       subType: subType,
       ref: ref,
       description: description,
+      isRequired: isRequired,
     );
   }
 }
@@ -233,6 +235,7 @@ mixin _$Property {
   Type get subType;
   String get ref;
   String get description;
+  bool get isRequired;
 
   $PropertyCopyWith<Property> get copyWith;
 }
@@ -242,7 +245,12 @@ abstract class $PropertyCopyWith<$Res> {
   factory $PropertyCopyWith(Property value, $Res Function(Property) then) =
       _$PropertyCopyWithImpl<$Res>;
   $Res call(
-      {String name, Type type, Type subType, String ref, String description});
+      {String name,
+      Type type,
+      Type subType,
+      String ref,
+      String description,
+      bool isRequired});
 }
 
 /// @nodoc
@@ -260,6 +268,7 @@ class _$PropertyCopyWithImpl<$Res> implements $PropertyCopyWith<$Res> {
     Object subType = freezed,
     Object ref = freezed,
     Object description = freezed,
+    Object isRequired = freezed,
   }) {
     return _then(_value.copyWith(
       name: name == freezed ? _value.name : name as String,
@@ -268,6 +277,8 @@ class _$PropertyCopyWithImpl<$Res> implements $PropertyCopyWith<$Res> {
       ref: ref == freezed ? _value.ref : ref as String,
       description:
           description == freezed ? _value.description : description as String,
+      isRequired:
+          isRequired == freezed ? _value.isRequired : isRequired as bool,
     ));
   }
 }
@@ -278,7 +289,12 @@ abstract class _$PropertyCopyWith<$Res> implements $PropertyCopyWith<$Res> {
       __$PropertyCopyWithImpl<$Res>;
   @override
   $Res call(
-      {String name, Type type, Type subType, String ref, String description});
+      {String name,
+      Type type,
+      Type subType,
+      String ref,
+      String description,
+      bool isRequired});
 }
 
 /// @nodoc
@@ -297,6 +313,7 @@ class __$PropertyCopyWithImpl<$Res> extends _$PropertyCopyWithImpl<$Res>
     Object subType = freezed,
     Object ref = freezed,
     Object description = freezed,
+    Object isRequired = freezed,
   }) {
     return _then(_Property(
       name: name == freezed ? _value.name : name as String,
@@ -305,6 +322,8 @@ class __$PropertyCopyWithImpl<$Res> extends _$PropertyCopyWithImpl<$Res>
       ref: ref == freezed ? _value.ref : ref as String,
       description:
           description == freezed ? _value.description : description as String,
+      isRequired:
+          isRequired == freezed ? _value.isRequired : isRequired as bool,
     ));
   }
 }
@@ -316,9 +335,11 @@ class _$_Property extends _Property {
       @required this.type,
       this.subType,
       this.ref,
-      this.description})
+      this.description,
+      this.isRequired = false})
       : assert(name != null),
         assert(type != null),
+        assert(isRequired != null),
         super._();
 
   @override
@@ -331,10 +352,13 @@ class _$_Property extends _Property {
   final String ref;
   @override
   final String description;
+  @JsonKey(defaultValue: false)
+  @override
+  final bool isRequired;
 
   @override
   String toString() {
-    return 'Property(name: $name, type: $type, subType: $subType, ref: $ref, description: $description)';
+    return 'Property(name: $name, type: $type, subType: $subType, ref: $ref, description: $description, isRequired: $isRequired)';
   }
 
   @override
@@ -352,7 +376,10 @@ class _$_Property extends _Property {
                 const DeepCollectionEquality().equals(other.ref, ref)) &&
             (identical(other.description, description) ||
                 const DeepCollectionEquality()
-                    .equals(other.description, description)));
+                    .equals(other.description, description)) &&
+            (identical(other.isRequired, isRequired) ||
+                const DeepCollectionEquality()
+                    .equals(other.isRequired, isRequired)));
   }
 
   @override
@@ -362,7 +389,8 @@ class _$_Property extends _Property {
       const DeepCollectionEquality().hash(type) ^
       const DeepCollectionEquality().hash(subType) ^
       const DeepCollectionEquality().hash(ref) ^
-      const DeepCollectionEquality().hash(description);
+      const DeepCollectionEquality().hash(description) ^
+      const DeepCollectionEquality().hash(isRequired);
 
   @override
   _$PropertyCopyWith<_Property> get copyWith =>
@@ -376,7 +404,8 @@ abstract class _Property extends Property {
       @required Type type,
       Type subType,
       String ref,
-      String description}) = _$_Property;
+      String description,
+      bool isRequired}) = _$_Property;
 
   @override
   String get name;
@@ -388,6 +417,8 @@ abstract class _Property extends Property {
   String get ref;
   @override
   String get description;
+  @override
+  bool get isRequired;
   @override
   _$PropertyCopyWith<_Property> get copyWith;
 }
