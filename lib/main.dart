@@ -101,7 +101,7 @@ Map<String, String> _parseHeader(String input) {
   if (input == null) return null;
 
   try {
-    if (!RegExp(r'^\w+:[\w|\s]+$').hasMatch(input)) throw ArgumentError();
+    if (!RegExp(r'^\w+:.+$').hasMatch(input)) throw ArgumentError();
     final matches = input.split(':');
     return {matches[0]: matches[1]};
   } catch (_) {
