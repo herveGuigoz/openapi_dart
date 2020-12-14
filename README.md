@@ -28,7 +28,7 @@ dart bin/openapi_dart.dart -r https://exemple.com/swagger.json -p /books -f
 
 - Add header for remote resource
 ```bash
-dart bin/openapi_dart.dart -r https://exemple.com/swagger.json -p /books - h 'Authorization: Bearer ACCESS_TOKEN'
+dart bin/openapi_dart.dart -r https://exemple.com/swagger.json -p /books -h 'Authorization: Bearer ACCESS_TOKEN'
 ```
 
 ## Todo
