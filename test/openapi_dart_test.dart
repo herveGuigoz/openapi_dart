@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:swagger_to_dart_response_model/models/definition.dart';
-import 'package:swagger_to_dart_response_model/providers.dart';
+import 'package:openapi_dart/models/definition.dart';
+import 'package:openapi_dart/providers.dart';
 import 'package:riverpod/all.dart';
 import 'package:test/test.dart';
 

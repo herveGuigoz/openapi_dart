@@ -8,13 +8,15 @@
 
 run `pub get`
 
+### Reading specs from file system
+```bash
+dart bin/openapi_dart.dart -j path/to/swagger.json -p /ressource
+```
+
 ### Reading specs from remote resource
 ```bash
-dart bin/openapi_dart.dart -r https://petstore.swagger.io/v2/swagger.json -p /pet/{petId}/uploadImage
+dart bin/openapi_dart.dart -r https://exemple.com/swagger.json -p /ressource
 ```
 
 ### Todo
-- use freezed option.
 - openApi v3.
-- generate api call method option
-- make work all options (POST, PUT, DELETE)
