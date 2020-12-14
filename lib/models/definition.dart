@@ -1,7 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:riverpod/riverpod.dart';
 
+import '../providers.dart';
 import '../utils/json_parser.dart';
 import '../utils/string_extensions.dart';
 
@@ -92,5 +94,17 @@ abstract class Property implements _$Property {
     if (type == 'array') return Array;
 
     return Object;
+  }
+
+  String asString(Reader read) {
+    if (!hasDefinition) {
+      return type == Array ? 'List<$subType> $name' : '$type $name';
+    }
+
+    final definition = read(definitionProvider(ref));
+
+    return subType == null
+        ? '_${definition.entity} $name'
+        : 'List<_${definition.entity}> $name';
   }
 }

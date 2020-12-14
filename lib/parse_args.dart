@@ -58,7 +58,7 @@ class Args {
     final method = argResults['method'] as String;
     final freezed = argResults['freezed'] as bool;
 
-    if (help || (remote == null && file == null) || path == null) {
+    if (help || path == null || (remote == null && file == null)) {
       return _help();
     }
 

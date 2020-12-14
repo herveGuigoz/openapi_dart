@@ -156,13 +156,15 @@ class _$RessourceTearOff {
       @required String tag,
       @required String operationId,
       String summary,
-      List<Response> responses}) {
+      List<Response> responses,
+      List<Parameter> parameters}) {
     return _Ressource(
       method: method,
       tag: tag,
       operationId: operationId,
       summary: summary,
       responses: responses,
+      parameters: parameters,
     );
   }
 }
@@ -178,6 +180,7 @@ mixin _$Ressource {
   String get operationId;
   String get summary;
   List<Response> get responses;
+  List<Parameter> get parameters;
 
   $RessourceCopyWith<Ressource> get copyWith;
 }
@@ -191,7 +194,8 @@ abstract class $RessourceCopyWith<$Res> {
       String tag,
       String operationId,
       String summary,
-      List<Response> responses});
+      List<Response> responses,
+      List<Parameter> parameters});
 }
 
 /// @nodoc
@@ -209,6 +213,7 @@ class _$RessourceCopyWithImpl<$Res> implements $RessourceCopyWith<$Res> {
     Object operationId = freezed,
     Object summary = freezed,
     Object responses = freezed,
+    Object parameters = freezed,
   }) {
     return _then(_value.copyWith(
       method: method == freezed ? _value.method : method as String,
@@ -218,6 +223,9 @@ class _$RessourceCopyWithImpl<$Res> implements $RessourceCopyWith<$Res> {
       summary: summary == freezed ? _value.summary : summary as String,
       responses:
           responses == freezed ? _value.responses : responses as List<Response>,
+      parameters: parameters == freezed
+          ? _value.parameters
+          : parameters as List<Parameter>,
     ));
   }
 }
@@ -233,7 +241,8 @@ abstract class _$RessourceCopyWith<$Res> implements $RessourceCopyWith<$Res> {
       String tag,
       String operationId,
       String summary,
-      List<Response> responses});
+      List<Response> responses,
+      List<Parameter> parameters});
 }
 
 /// @nodoc
@@ -252,6 +261,7 @@ class __$RessourceCopyWithImpl<$Res> extends _$RessourceCopyWithImpl<$Res>
     Object operationId = freezed,
     Object summary = freezed,
     Object responses = freezed,
+    Object parameters = freezed,
   }) {
     return _then(_Ressource(
       method: method == freezed ? _value.method : method as String,
@@ -261,6 +271,9 @@ class __$RessourceCopyWithImpl<$Res> extends _$RessourceCopyWithImpl<$Res>
       summary: summary == freezed ? _value.summary : summary as String,
       responses:
           responses == freezed ? _value.responses : responses as List<Response>,
+      parameters: parameters == freezed
+          ? _value.parameters
+          : parameters as List<Parameter>,
     ));
   }
 }
@@ -272,7 +285,8 @@ class _$_Ressource extends _Ressource {
       @required this.tag,
       @required this.operationId,
       this.summary,
-      this.responses})
+      this.responses,
+      this.parameters})
       : assert(method != null),
         assert(tag != null),
         assert(operationId != null),
@@ -288,10 +302,12 @@ class _$_Ressource extends _Ressource {
   final String summary;
   @override
   final List<Response> responses;
+  @override
+  final List<Parameter> parameters;
 
   @override
   String toString() {
-    return 'Ressource(method: $method, tag: $tag, operationId: $operationId, summary: $summary, responses: $responses)';
+    return 'Ressource(method: $method, tag: $tag, operationId: $operationId, summary: $summary, responses: $responses, parameters: $parameters)';
   }
 
   @override
@@ -310,7 +326,10 @@ class _$_Ressource extends _Ressource {
                     .equals(other.summary, summary)) &&
             (identical(other.responses, responses) ||
                 const DeepCollectionEquality()
-                    .equals(other.responses, responses)));
+                    .equals(other.responses, responses)) &&
+            (identical(other.parameters, parameters) ||
+                const DeepCollectionEquality()
+                    .equals(other.parameters, parameters)));
   }
 
   @override
@@ -320,7 +339,8 @@ class _$_Ressource extends _Ressource {
       const DeepCollectionEquality().hash(tag) ^
       const DeepCollectionEquality().hash(operationId) ^
       const DeepCollectionEquality().hash(summary) ^
-      const DeepCollectionEquality().hash(responses);
+      const DeepCollectionEquality().hash(responses) ^
+      const DeepCollectionEquality().hash(parameters);
 
   @override
   _$RessourceCopyWith<_Ressource> get copyWith =>
@@ -334,7 +354,8 @@ abstract class _Ressource extends Ressource {
       @required String tag,
       @required String operationId,
       String summary,
-      List<Response> responses}) = _$_Ressource;
+      List<Response> responses,
+      List<Parameter> parameters}) = _$_Ressource;
 
   @override
   String get method;
@@ -346,6 +367,8 @@ abstract class _Ressource extends Ressource {
   String get summary;
   @override
   List<Response> get responses;
+  @override
+  List<Parameter> get parameters;
   @override
   _$RessourceCopyWith<_Ressource> get copyWith;
 }
@@ -505,11 +528,13 @@ class _$ParameterTearOff {
   _Parameter call(
       {@required String name,
       @required String ref,
+      bool isRequired,
       String origin,
       String description}) {
     return _Parameter(
       name: name,
       ref: ref,
+      isRequired: isRequired,
       origin: origin,
       description: description,
     );
@@ -523,7 +548,8 @@ const $Parameter = _$ParameterTearOff();
 /// @nodoc
 mixin _$Parameter {
   String get name;
-  String get ref; // 'in' value in OpenDate spec
+  String get ref;
+  bool get isRequired; // 'in' value in OpenDate spec
   String get origin;
   String get description;
 
@@ -534,7 +560,12 @@ mixin _$Parameter {
 abstract class $ParameterCopyWith<$Res> {
   factory $ParameterCopyWith(Parameter value, $Res Function(Parameter) then) =
       _$ParameterCopyWithImpl<$Res>;
-  $Res call({String name, String ref, String origin, String description});
+  $Res call(
+      {String name,
+      String ref,
+      bool isRequired,
+      String origin,
+      String description});
 }
 
 /// @nodoc
@@ -549,12 +580,15 @@ class _$ParameterCopyWithImpl<$Res> implements $ParameterCopyWith<$Res> {
   $Res call({
     Object name = freezed,
     Object ref = freezed,
+    Object isRequired = freezed,
     Object origin = freezed,
     Object description = freezed,
   }) {
     return _then(_value.copyWith(
       name: name == freezed ? _value.name : name as String,
       ref: ref == freezed ? _value.ref : ref as String,
+      isRequired:
+          isRequired == freezed ? _value.isRequired : isRequired as bool,
       origin: origin == freezed ? _value.origin : origin as String,
       description:
           description == freezed ? _value.description : description as String,
@@ -568,7 +602,12 @@ abstract class _$ParameterCopyWith<$Res> implements $ParameterCopyWith<$Res> {
           _Parameter value, $Res Function(_Parameter) then) =
       __$ParameterCopyWithImpl<$Res>;
   @override
-  $Res call({String name, String ref, String origin, String description});
+  $Res call(
+      {String name,
+      String ref,
+      bool isRequired,
+      String origin,
+      String description});
 }
 
 /// @nodoc
@@ -584,12 +623,15 @@ class __$ParameterCopyWithImpl<$Res> extends _$ParameterCopyWithImpl<$Res>
   $Res call({
     Object name = freezed,
     Object ref = freezed,
+    Object isRequired = freezed,
     Object origin = freezed,
     Object description = freezed,
   }) {
     return _then(_Parameter(
       name: name == freezed ? _value.name : name as String,
       ref: ref == freezed ? _value.ref : ref as String,
+      isRequired:
+          isRequired == freezed ? _value.isRequired : isRequired as bool,
       origin: origin == freezed ? _value.origin : origin as String,
       description:
           description == freezed ? _value.description : description as String,
@@ -600,7 +642,11 @@ class __$ParameterCopyWithImpl<$Res> extends _$ParameterCopyWithImpl<$Res>
 /// @nodoc
 class _$_Parameter extends _Parameter {
   const _$_Parameter(
-      {@required this.name, @required this.ref, this.origin, this.description})
+      {@required this.name,
+      @required this.ref,
+      this.isRequired,
+      this.origin,
+      this.description})
       : assert(name != null),
         assert(ref != null),
         super._();
@@ -609,6 +655,8 @@ class _$_Parameter extends _Parameter {
   final String name;
   @override
   final String ref;
+  @override
+  final bool isRequired;
   @override // 'in' value in OpenDate spec
   final String origin;
   @override
@@ -616,7 +664,7 @@ class _$_Parameter extends _Parameter {
 
   @override
   String toString() {
-    return 'Parameter(name: $name, ref: $ref, origin: $origin, description: $description)';
+    return 'Parameter(name: $name, ref: $ref, isRequired: $isRequired, origin: $origin, description: $description)';
   }
 
   @override
@@ -627,6 +675,9 @@ class _$_Parameter extends _Parameter {
                 const DeepCollectionEquality().equals(other.name, name)) &&
             (identical(other.ref, ref) ||
                 const DeepCollectionEquality().equals(other.ref, ref)) &&
+            (identical(other.isRequired, isRequired) ||
+                const DeepCollectionEquality()
+                    .equals(other.isRequired, isRequired)) &&
             (identical(other.origin, origin) ||
                 const DeepCollectionEquality().equals(other.origin, origin)) &&
             (identical(other.description, description) ||
@@ -639,6 +690,7 @@ class _$_Parameter extends _Parameter {
       runtimeType.hashCode ^
       const DeepCollectionEquality().hash(name) ^
       const DeepCollectionEquality().hash(ref) ^
+      const DeepCollectionEquality().hash(isRequired) ^
       const DeepCollectionEquality().hash(origin) ^
       const DeepCollectionEquality().hash(description);
 
@@ -652,6 +704,7 @@ abstract class _Parameter extends Parameter {
   const factory _Parameter(
       {@required String name,
       @required String ref,
+      bool isRequired,
       String origin,
       String description}) = _$_Parameter;
 
@@ -659,6 +712,8 @@ abstract class _Parameter extends Parameter {
   String get name;
   @override
   String get ref;
+  @override
+  bool get isRequired;
   @override // 'in' value in OpenDate spec
   String get origin;
   @override

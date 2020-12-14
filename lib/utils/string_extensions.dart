@@ -10,6 +10,19 @@ extension StringExt on String {
     return '';
   }
 
+  String allBefore(Pattern pattern) {
+    ArgumentError.checkNotNull(pattern, 'pattern');
+    final matchIterator = pattern.allMatches(this).iterator;
+    Match match;
+    while (matchIterator.moveNext()) {
+      match = matchIterator.current;
+    }
+    if (match != null) {
+      return substring(0, match.start);
+    }
+    return '';
+  }
+
   String toFileName() {
     var res = this;
     final pattern = '[A-Z]';

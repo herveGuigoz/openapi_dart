@@ -30,7 +30,7 @@ abstract class Path implements _$Path {
     final _method = method.toLowerCase();
 
     if (!['get', 'post', 'put', 'delete'].contains(_method)) {
-      throw Exception('Method $_method not available');
+      throw Exception('Method $_method not available for path $iri');
     }
 
     return ressources.firstWhere(
@@ -52,7 +52,7 @@ abstract class Ressource implements _$Ressource {
     @required String operationId,
     String summary,
     List<Response> responses,
-    // this.requests,
+    List<Parameter> parameters,
   }) = _Ressource;
 
   factory Ressource.fromKeyValue(String key, Map<String, Object> value) {
@@ -65,7 +65,12 @@ abstract class Ressource implements _$Ressource {
         json: value,
         key: 'responses',
         builder: (key, value) => Response.fromKeyValue(key, value),
-      ), //.where((response) => response.hasDefinition).toList(),
+      ),
+      parameters: value['parameters'] != null
+          ? (value['parameters'] as Iterable)
+              .map((dynamic e) => Parameter.fromJson(e as Map<String, Object>))
+              .toList()
+          : <Parameter>[],
       // requests: requests,
     );
   }
@@ -99,6 +104,7 @@ abstract class Parameter implements _$Parameter {
   const factory Parameter({
     @required String name,
     @required String ref,
+    bool isRequired,
     // 'in' value in OpenDate spec
     String origin,
     String description,
@@ -107,9 +113,10 @@ abstract class Parameter implements _$Parameter {
   factory Parameter.fromJson(Map<String, Object> json) {
     return Parameter(
       name: json['name'] as String,
-      description: JsonParser.parseKey(json, 'description'),
-      origin: JsonParser.parseKey(json, 'in'),
       ref: JsonParser.parseSchema(json),
+      isRequired: json['required'] != null,
+      description: JsonParser.parseKey<String>(json, 'description'),
+      origin: JsonParser.parseKey<String>(json, 'in'),
     );
   }
 }

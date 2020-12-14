@@ -1,6 +1,5 @@
-import '../models/definition.dart';
-import '../providers.dart';
-import 'file_manager.dart';
+import '../../models/definition.dart';
+import '../file_manager.dart';
 
 mixin DartClassBuilder on FileManager {
   Definition get definition;
@@ -26,21 +25,6 @@ mixin DartClassBuilder on FileManager {
     if (property?.description != null) {
       indent('// ${property.description}');
     }
-
-    if (!property.hasDefinition) {
-      final type = property.type == Array
-          ? 'List<${property.subType}>'
-          : '${property.type}';
-
-      return indent('final $type ${property.name};');
-    }
-
-    final definition = read(definitionProvider(property.ref));
-
-    if (property?.subType == null) {
-      return indent('final _${definition.entity} ${property.name};');
-    }
-
-    indent('final List<_${definition.entity}> ${property.name};');
+    indent('final ${property.asString(read)};');
   }
 }
