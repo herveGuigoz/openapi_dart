@@ -1,5 +1,5 @@
-name: openapi_dart
-description: Bild Dart class from Open Api (Swagger) documentation.
+name: swagger_to_dart_response_model
+description: Build Dart models from Open Api (Swagger) documentation.
 repository: https://github.com/herveGuigoz/openapi_dart
 homepage: https://github.com/herveGuigoz/openapi_dart
 version: 0.0.1
