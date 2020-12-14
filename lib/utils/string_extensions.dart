@@ -48,13 +48,3 @@ extension StringExt on String {
   String get withoutBlankCharacters =>
       split(' ').map((e) => e.capitalize).join();
 }
-
-// Returns the joined elements of the list
-// if the list is not null; otherwise null.
-String join(List list, [String separator = '']) {
-  if (list == null) {
-    return null;
-  }
-
-  return list.join(separator);
-}

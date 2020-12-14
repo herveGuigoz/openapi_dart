@@ -105,7 +105,7 @@ abstract class Parameter implements _$Parameter {
     @required String name,
     @required String ref,
     bool isRequired,
-    // 'in' value in OpenDate spec
+    // 'in' value in OpenData spec
     String origin,
     String description,
     Type type,

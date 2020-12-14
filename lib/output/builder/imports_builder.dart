@@ -1,5 +1,5 @@
-import '../providers.dart';
-import 'file_manager.dart';
+import '../../providers.dart';
+import '../file_manager.dart';
 
 mixin ImportsBuilder on FileManager {
   String get fileName;

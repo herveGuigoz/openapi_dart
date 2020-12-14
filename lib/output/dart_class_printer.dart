@@ -6,8 +6,8 @@ import '../providers.dart';
 import '../utils/string_extensions.dart';
 import 'builder/dart_class_builder.dart';
 import 'builder/freezed_class_builder.dart';
+import 'builder/imports_builder.dart';
 import 'file_manager.dart';
-import 'imports_builder.dart';
 
 class DartClassPrinter extends FileManager
     with ImportsBuilder, FreezedClassBuilder, DartClassBuilder {
