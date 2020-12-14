@@ -108,15 +108,21 @@ abstract class Parameter implements _$Parameter {
     // 'in' value in OpenDate spec
     String origin,
     String description,
+    Type type,
   }) = _Parameter;
 
   factory Parameter.fromJson(Map<String, Object> json) {
     return Parameter(
       name: json['name'] as String,
       ref: JsonParser.parseSchema(json),
-      isRequired: json['required'] != null,
+      isRequired: json['required'] != null
+          ? json['required'].runtimeType == bool
+              ? json['required'] as bool
+              : json['required'] as String == 'true'
+          : false,
       description: JsonParser.parseKey<String>(json, 'description'),
       origin: JsonParser.parseKey<String>(json, 'in'),
+      type: JsonParser.parseType(json),
     );
   }
 }

@@ -73,8 +73,8 @@ abstract class Property implements _$Property {
 
     return Property(
       name: key,
-      type: _getType(value),
-      subType: items != null ? _getType(items) : null,
+      type: JsonParser.parseType(value),
+      subType: items != null ? JsonParser.parseType(items) : null,
       ref: ref?.allAfter('#/definitions/'),
       description: JsonParser.parseKey(value, 'description'),
     );
@@ -82,19 +82,6 @@ abstract class Property implements _$Property {
 
   bool get hasDefinition => type == Definition || subType == Definition;
   bool get isArray => type == Array;
-
-  static Type _getType(Map<String, Object> json) {
-    final type = json['type'] as String;
-    final ref = JsonParser.parseKey<String>(json, r'$ref');
-
-    if (ref != null) return Definition;
-    if (type == 'string') return String;
-    if (type == 'integer') return int;
-    if (type == 'boolean') return bool;
-    if (type == 'array') return Array;
-
-    return Object;
-  }
 
   String asString(Reader read) {
     if (!hasDefinition) {

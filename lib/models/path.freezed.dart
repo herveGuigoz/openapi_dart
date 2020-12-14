@@ -530,13 +530,15 @@ class _$ParameterTearOff {
       @required String ref,
       bool isRequired,
       String origin,
-      String description}) {
+      String description,
+      Type type}) {
     return _Parameter(
       name: name,
       ref: ref,
       isRequired: isRequired,
       origin: origin,
       description: description,
+      type: type,
     );
   }
 }
@@ -552,6 +554,7 @@ mixin _$Parameter {
   bool get isRequired; // 'in' value in OpenDate spec
   String get origin;
   String get description;
+  Type get type;
 
   $ParameterCopyWith<Parameter> get copyWith;
 }
@@ -565,7 +568,8 @@ abstract class $ParameterCopyWith<$Res> {
       String ref,
       bool isRequired,
       String origin,
-      String description});
+      String description,
+      Type type});
 }
 
 /// @nodoc
@@ -583,6 +587,7 @@ class _$ParameterCopyWithImpl<$Res> implements $ParameterCopyWith<$Res> {
     Object isRequired = freezed,
     Object origin = freezed,
     Object description = freezed,
+    Object type = freezed,
   }) {
     return _then(_value.copyWith(
       name: name == freezed ? _value.name : name as String,
@@ -592,6 +597,7 @@ class _$ParameterCopyWithImpl<$Res> implements $ParameterCopyWith<$Res> {
       origin: origin == freezed ? _value.origin : origin as String,
       description:
           description == freezed ? _value.description : description as String,
+      type: type == freezed ? _value.type : type as Type,
     ));
   }
 }
@@ -607,7 +613,8 @@ abstract class _$ParameterCopyWith<$Res> implements $ParameterCopyWith<$Res> {
       String ref,
       bool isRequired,
       String origin,
-      String description});
+      String description,
+      Type type});
 }
 
 /// @nodoc
@@ -626,6 +633,7 @@ class __$ParameterCopyWithImpl<$Res> extends _$ParameterCopyWithImpl<$Res>
     Object isRequired = freezed,
     Object origin = freezed,
     Object description = freezed,
+    Object type = freezed,
   }) {
     return _then(_Parameter(
       name: name == freezed ? _value.name : name as String,
@@ -635,6 +643,7 @@ class __$ParameterCopyWithImpl<$Res> extends _$ParameterCopyWithImpl<$Res>
       origin: origin == freezed ? _value.origin : origin as String,
       description:
           description == freezed ? _value.description : description as String,
+      type: type == freezed ? _value.type : type as Type,
     ));
   }
 }
@@ -646,7 +655,8 @@ class _$_Parameter extends _Parameter {
       @required this.ref,
       this.isRequired,
       this.origin,
-      this.description})
+      this.description,
+      this.type})
       : assert(name != null),
         assert(ref != null),
         super._();
@@ -661,10 +671,12 @@ class _$_Parameter extends _Parameter {
   final String origin;
   @override
   final String description;
+  @override
+  final Type type;
 
   @override
   String toString() {
-    return 'Parameter(name: $name, ref: $ref, isRequired: $isRequired, origin: $origin, description: $description)';
+    return 'Parameter(name: $name, ref: $ref, isRequired: $isRequired, origin: $origin, description: $description, type: $type)';
   }
 
   @override
@@ -682,7 +694,9 @@ class _$_Parameter extends _Parameter {
                 const DeepCollectionEquality().equals(other.origin, origin)) &&
             (identical(other.description, description) ||
                 const DeepCollectionEquality()
-                    .equals(other.description, description)));
+                    .equals(other.description, description)) &&
+            (identical(other.type, type) ||
+                const DeepCollectionEquality().equals(other.type, type)));
   }
 
   @override
@@ -692,7 +706,8 @@ class _$_Parameter extends _Parameter {
       const DeepCollectionEquality().hash(ref) ^
       const DeepCollectionEquality().hash(isRequired) ^
       const DeepCollectionEquality().hash(origin) ^
-      const DeepCollectionEquality().hash(description);
+      const DeepCollectionEquality().hash(description) ^
+      const DeepCollectionEquality().hash(type);
 
   @override
   _$ParameterCopyWith<_Parameter> get copyWith =>
@@ -706,7 +721,8 @@ abstract class _Parameter extends Parameter {
       @required String ref,
       bool isRequired,
       String origin,
-      String description}) = _$_Parameter;
+      String description,
+      Type type}) = _$_Parameter;
 
   @override
   String get name;
@@ -718,6 +734,8 @@ abstract class _Parameter extends Parameter {
   String get origin;
   @override
   String get description;
+  @override
+  Type get type;
   @override
   _$ParameterCopyWith<_Parameter> get copyWith;
 }

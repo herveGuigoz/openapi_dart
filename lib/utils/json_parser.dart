@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 
+import '../models/definition.dart';
+
 mixin JsonParser {
   static String parseSchema(Map<String, Object> json) {
     final ref = parseKey<String>(json, r'$ref');
@@ -52,5 +54,18 @@ mixin JsonParser {
     return json[key] != null
         ? (json[key] as Iterable).map((dynamic e) => e as T).toList()
         : <T>[];
+  }
+
+  static Type parseType(Map<String, Object> json) {
+    final type = json['type'] as String;
+    final ref = parseKey<String>(json, r'$ref');
+
+    if (ref != null) return Definition;
+    if (type == 'string') return String;
+    if (type == 'integer') return int;
+    if (type == 'boolean') return bool;
+    if (type == 'array') return Array;
+
+    return Object;
   }
 }
