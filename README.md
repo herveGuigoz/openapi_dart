@@ -1,22 +1,35 @@
 # 📘️ openapi-dart
 
-🚀 Bild Dart class from Open Api ([Swagger]((https://swagger.io/specification/v2/))) documentation.
+🚀 Bild Dart models from Open Api ([Swagger]((https://swagger.io/specification/v2/))) documentation for given path and method.
 
 ## Usage
 
-### Provision required packages
-
-run `pub get`
-
 ### Reading specs from file system
 ```bash
-dart bin/openapi_dart.dart -j path/to/swagger.json -p /ressource
+dart bin/openapi_dart.dart -j path/to/swagger.json -p /books
 ```
 
 ### Reading specs from remote resource
 ```bash
-dart bin/openapi_dart.dart -r https://exemple.com/swagger.json -p /ressource
+dart bin/openapi_dart.dart -r https://exemple.com/swagger.json -p /books
 ```
 
-### Todo
+### Options
+
+- Displays help information.
+```bash
+dart bin/openapi_dart.dart --help
+```
+
+- Freezed class
+```bash
+dart bin/openapi_dart.dart -r https://exemple.com/swagger.json -p /books -f
+```
+
+- Add header for remote resource
+```bash
+dart bin/openapi_dart.dart -r https://exemple.com/swagger.json -p /books - h 'Authorization: Bearer ACCESS_TOKEN'
+```
+
+## Todo
 - openApi v3.
