@@ -1,6 +1,6 @@
 # 📘️ openapi-dart
 
-🚀 Bild Dart models from Open Api ([Swagger]((https://swagger.io/specification/v2/))) documentation for given path and method.
+🚀 Build Dart models from Open Api ([Swagger]((https://swagger.io/specification/v2/))) documentation for given path and method.
 
 ## Usage
 
