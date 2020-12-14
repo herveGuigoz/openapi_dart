@@ -1,35 +1,45 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:openapi_dart/models/result.dart';
-import 'package:openapi_dart/utils/json_parser.dart';
 import 'package:riverpod/all.dart';
 
 import 'models/definition.dart';
 import 'models/path.dart';
+import 'models/result.dart';
 import 'network/repository.dart';
+import 'utils/json_parser.dart';
+import 'utils/string_extensions.dart';
+
+final fileProvider = Provider<String>(null);
 
 /// OpenApi documentation url.
 final urlProvider = Provider<String>(null);
+
+final httpHeaderProvider = Provider<Map<String, String>>(null);
 
 /// User path to request as String
 final pathProvider = Provider<String>(null);
 
 final methodProvider = Provider<String>(null);
 
-/// Output directory for generated files.
-final dirPathProvider = Provider((_) => 'build/');
+final isFreezedClass = Provider<bool>(null);
 
 /// Parent file name where all `Part '...';` will be injected.
 final mainResponseFileNameProvider = Provider<String>((ref) {
-  return 'responses.dart';
+  return 'models.dart';
 });
 
-/// Network call to load openApi documetation.
+/// Load openApi documetation.
 final specsProvider = FutureProvider<String>((ref) async {
+  final filePath = ref.read(fileProvider);
   final url = ref.read(urlProvider);
-  stdout.writeln('Loading spec from $url..');
-  return Repository.loadJson(url);
+  final header = ref.read(httpHeaderProvider);
+
+  filePath != null
+      ? stdout.writeln('Loading spec from $filePath..')
+      : stdout.writeln('Loading spec from $url..');
+
+  return Repository.loadJson(filePath: filePath, url: url, headers: header);
 });
 
 /// All Definition list in openApi documentation.
@@ -80,28 +90,31 @@ final pathModelProvider = Provider<Result<Path>>((ref) {
 });
 
 /// Get reference for response definition
-final getRessourcesForPath = Provider<Result<List<Ressource>>>((ref) {
-  List<Ressource> ressources;
+final getRessourcesForPath = Provider<Result<Ressource>>((ref) {
+  Ressource ressource;
   try {
     final path = ref.read(pathModelProvider).dataOrThrow;
-    ressources = path.ressources;
+    final method = ref.read(methodProvider);
+    ressource = path.getRessourceByMethod(method);
   } catch (err) {
     return Result.error(err.toString());
   }
 
-  return Result.data(ressources ?? <Ressource>[]);
+  return Result.data(ressource);
 });
 
 /// Where all `part '...';` will be saved.
-final stringBufferProvider = Provider(
-  (_) => StringBuffer()..writeln("import 'package:meta/meta.dart';\n"),
-);
+final stringBufferProvider = Provider<StringBuffer>((ref) {
+  final isFreezed = ref.read(isFreezedClass);
+  final buffer = StringBuffer()..writeln("import 'package:meta/meta.dart';\n");
+  if (isFreezed) {
+    final fileName = ref.read(mainResponseFileNameProvider).allBefore('.dart');
+    buffer
+      ..writeln(
+        "import 'package:freezed_annotation/freezed_annotation.dart';\n",
+      )
+      ..writeln("part '$fileName.freezed.dart';\n");
+  }
 
-// final filesControllerProvider = Provider<StateController<List<String>>>(
-//   (ref) => StateController<List<String>>(<String>[]),
-// );
-
-// final fileAlreadyCreated = Provider.family<bool, String>((ref, reference) {
-//   final controller = ref.watch(filesControllerProvider);
-//   return controller.state.contains(reference);
-// });
+  return buffer;
+});

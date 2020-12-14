@@ -7,18 +7,30 @@ import 'output/file_manager.dart';
 import 'providers.dart';
 import 'utils/string_extensions.dart';
 
-Future<void> main(String url, String path, String method) async {
+Future<void> main(
+  String file,
+  String url,
+  String path,
+  String methods, {
+  bool freezed = false,
+  String header,
+}) async {
+  final headerAsMap = _parseHeader(header);
+
   final container = ProviderContainer(
     overrides: [
+      fileProvider.overrideWithValue(file),
       urlProvider.overrideWithValue(url),
+      httpHeaderProvider.overrideWithValue(headerAsMap),
       pathProvider.overrideWithValue(path),
-      methodProvider.overrideWithValue(method),
+      methodProvider.overrideWithValue(methods.toLowerCase()),
+      isFreezedClass.overrideWithValue(freezed),
     ],
   );
 
   /// load open api documentation.
   await container.read(specsProvider.future).catchError((dynamic _) {
-    stderr.writeln('error: $url is invalid');
+    stderr.writeln('error: ${url ?? file} argument is invalid');
     exit(2);
   });
 
@@ -31,31 +43,67 @@ Future<void> main(String url, String path, String method) async {
 }
 
 Future<void> _writeResponses(ProviderContainer container) async {
-  /// Find [Ressource] list for given path.
+  final directory = _getDirectory(container);
+
+  /// Find [Ressource]  for given path.
   final result = container.read(getRessourcesForPath)..onError(_handleError);
+  final ressource = result.dataOrThrow;
+  final responses =
+      ressource.responses.where((response) => response.hasDefinition).toList();
 
-  /// Find [Response] for method GET
-  final response = result.dataOrThrow.first.responses.first;
+  for (final response in responses) {
+    /// write file(s).
+    try {
+      await DartClassPrinter(
+        container.read,
+        ref: response.ref,
+        directory: directory,
+        className: response.description.withoutBlankCharacters,
+      ).generate();
+    } catch (err) {
+      _handleError(err);
+    }
 
-  /// write file(s).
-  try {
-    await DartClassPrinter(
-      container.read,
-      ref: response.ref,
-      className: response.description.withoutBlankCharacters,
-    ).generate();
-  } catch (err) {
-    _handleError(err);
+    await _saveImportsFile(container, directory);
   }
+}
 
-  await _saveImportsFile(container);
+/// Get path name for given ressource method.
+String _getDirectory(ProviderContainer container) {
+  var path = container.read(pathProvider);
+  path.contains('/{id}')
+      ? path = path.replaceAll(RegExp(r'/{id}'), '_item')
+      : path = '${path}_collection';
+  return 'build$path/';
 }
 
 /// Save main file with `part of '..` list.
-Future<void> _saveImportsFile(ProviderContainer container) async {
+Future<void> _saveImportsFile(ProviderContainer container, String dir) async {
   final stringBuffer = container.read(stringBufferProvider);
   final fileName = container.read(mainResponseFileNameProvider);
-  await FileManager(container.read, stringBuffer: stringBuffer).save(fileName);
+
+  // Write and save file.
+  await FileManager(
+    container.read,
+    dir,
+    stringBuffer: stringBuffer,
+  ).save(fileName);
+
+  // Cleanup string buffer
+  container.refresh(stringBufferProvider);
+}
+
+Map<String, String> _parseHeader(String input) {
+  if (input == null) return null;
+
+  try {
+    if (!RegExp(r'^\w+:[\w|\s]+$').hasMatch(input)) throw ArgumentError();
+    final matches = input.split(':');
+    return {matches[0]: matches[1]};
+  } catch (_) {
+    stdout.writeln('Invalid argument, skipping header.');
+    return null;
+  }
 }
 
 void _handleError(dynamic error) {
