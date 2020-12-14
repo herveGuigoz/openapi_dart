@@ -8,13 +8,13 @@ class Args {
       'remote',
       abbr: 'r',
       valueHelp: 'https://petstore.swagger.io/v2/swagger.json',
-      help: 'OpenApi documentation url.',
+      help: 'Reading specs from remote resource',
     )
     ..addOption(
       'json',
       abbr: 'j',
       valueHelp: 'swagger.json',
-      help: 'OpenApi documentation json file.',
+      help: 'Reading specs from file system',
     )
     ..addOption(
       'header',
@@ -34,6 +34,12 @@ class Args {
       allowed: ['GET', 'POST', 'PUT'],
       help: 'Path request method to translate.',
       defaultsTo: 'GET',
+    )
+    ..addOption(
+      'output',
+      abbr: 'o',
+      help: 'Where files will be saved.',
+      defaultsTo: 'build/',
     )
     ..addFlag(
       'freezed',
@@ -56,6 +62,7 @@ class Args {
     final remote = argResults['remote'] as String;
     final path = argResults['path'] as String;
     final method = argResults['method'] as String;
+    final directory = argResults['output'] as String;
     final freezed = argResults['freezed'] as bool;
 
     if (help || path == null || (remote == null && file == null)) {
@@ -63,10 +70,11 @@ class Args {
     }
 
     return main(
-      file,
-      remote,
-      path,
-      method,
+      file: file,
+      url: remote,
+      path: path,
+      methods: method,
+      dir: directory,
       freezed: freezed,
       header: header,
     );

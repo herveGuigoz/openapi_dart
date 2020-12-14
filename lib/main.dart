@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:riverpod/all.dart';
 
 import 'output/dart_class_printer.dart';
@@ -7,11 +8,12 @@ import 'output/file_manager.dart';
 import 'providers.dart';
 import 'utils/string_extensions.dart';
 
-Future<void> main(
+Future<void> main({
+  @required String methods,
+  @required String dir,
   String file,
   String url,
   String path,
-  String methods, {
   bool freezed = false,
   String header,
 }) async {
@@ -21,6 +23,7 @@ Future<void> main(
     overrides: [
       fileProvider.overrideWithValue(file),
       urlProvider.overrideWithValue(url),
+      directoryProvider.overrideWithValue(dir),
       httpHeaderProvider.overrideWithValue(headerAsMap),
       pathProvider.overrideWithValue(path),
       methodProvider.overrideWithValue(methods.toLowerCase()),
@@ -70,11 +73,12 @@ Future<void> _writeResponses(ProviderContainer container) async {
 
 /// Get path name for given ressource method.
 String _getDirectory(ProviderContainer container) {
-  var path = container.read(pathProvider);
-  path.contains('/{id}')
-      ? path = path.replaceAll(RegExp(r'/{id}'), '_item')
-      : path = '${path}_collection';
-  return 'build$path/';
+  final dir = container.read(directoryProvider);
+  // var path = container.read(pathProvider);
+  // path.contains('/{id}')
+  //     ? path = path.replaceAll(RegExp(r'/{id}'), '_item')
+  //     : path = '${path}_collection';
+  return '$dir';
 }
 
 /// Save main file with `part of '..` list.

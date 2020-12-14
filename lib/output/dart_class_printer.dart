@@ -67,11 +67,3 @@ class DartClassPrinter extends FileManager
     ).generate();
   }
 }
-
-// TODO parameters output when `in` is path
-// Map<String, Object> queryParameters({String a, String b}) {
-//   final params = <String, Object>{};
-//   if (a != null) params['a'] = a;
-
-//   return params;
-// }

@@ -10,19 +10,26 @@ import 'network/repository.dart';
 import 'utils/json_parser.dart';
 import 'utils/string_extensions.dart';
 
+/// Directory to write files on.
+final directoryProvider = Provider<String>(null);
+
+/// File system ressource.
 final fileProvider = Provider<String>(null);
 
-/// OpenApi documentation url.
+/// Remote resource.
 final urlProvider = Provider<String>(null);
 
+/// Remote header.
 final httpHeaderProvider = Provider<Map<String, String>>(null);
 
-/// User path to request as String
+/// User path to request as String.
 final pathProvider = Provider<String>(null);
 
+/// Http method to handle.
 final methodProvider = Provider<String>(null);
 
-final isFreezedClass = Provider<bool>(null);
+/// If false output will be Dart class.
+final isFreezedClass = Provider<bool>((_) => false);
 
 /// Parent file name where all `Part '...';` will be injected.
 final mainResponseFileNameProvider = Provider<String>((ref) {
@@ -89,7 +96,7 @@ final pathModelProvider = Provider<Result<Path>>((ref) {
       : Result.error(ArgumentError('undefine $param in specifications'));
 });
 
-/// Get reference for response definition
+/// Get reference for response definition.
 final getRessourcesForPath = Provider<Result<Ressource>>((ref) {
   Ressource ressource;
   try {
